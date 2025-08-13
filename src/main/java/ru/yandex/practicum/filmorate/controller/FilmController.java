@@ -16,7 +16,7 @@ import java.util.Map;
 public class FilmController {
 
     private final Map<Integer, Film> films = new HashMap<>();
-    private final static Logger filmLog = LoggerFactory.getLogger(Film.class);
+    private final Logger filmLog = LoggerFactory.getLogger(Film.class);
 
     //получение всех фильмов.
     @GetMapping
