@@ -77,8 +77,9 @@ public class UserControllerTests {
         User newUser = new User();
         newUser.setBirthday(LocalDate.now());
         newUser.setEmail("tututu@mail.com");
-        newUser.setLogin("User 1");
+        newUser.setLogin("User1");
         newUser.setName("User 1 ru");
+        newUser.setId(user.getId());
 
         userController.update(newUser);
         Collection<User> users = userController.findAll();
