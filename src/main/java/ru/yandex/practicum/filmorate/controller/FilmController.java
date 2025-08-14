@@ -1,12 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.checkers.FilmChecker;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,11 +27,9 @@ public class FilmController {
 
     //добавление фильма;
     @PostMapping
-    public Film create(@RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) {
 
-        if (!FilmChecker.checkAndLogFilm(film, filmLog)) {
-            throw new ValidationException("Валидация не пройдена");
-        }
+        validateReleaseDate(film);
 
         int newId = getNextId();
         film.setId(newId);
@@ -41,11 +40,9 @@ public class FilmController {
 
     //обновление фильма;
     @PutMapping
-    public Film update(@RequestBody Film newFilm) {
-        //Если проверка не пройдена - не фильм не обновляем
-        if (!FilmChecker.checkAndLogFilm(newFilm, filmLog)) {
-            throw new ValidationException("Валидация не пройдена");
-        }
+    public Film update(@Valid @RequestBody Film newFilm) {
+        //Если проверка не пройдена - фильм не обновляем
+        validateReleaseDate(newFilm);
 
         int filmId = newFilm.getId();
         if (!films.containsKey(filmId)) {
@@ -57,6 +54,16 @@ public class FilmController {
         return newFilm;
     }
 
+    private void validateReleaseDate(Film film) {
+
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            filmLog.warn("Дата релиза фильма должна быть больше 28 декабря 1895 года");
+            throw new ValidationException("Валидация не пройдена");
+        }
+
+
+    }
+
     private int getNextId() {
         int currentMaxId = films.keySet()
                 .stream()
@@ -65,5 +72,9 @@ public class FilmController {
                 .orElse(0);
 
         return ++currentMaxId;
+    }
+
+    public void clearFilms() {
+        films.clear();
     }
 }

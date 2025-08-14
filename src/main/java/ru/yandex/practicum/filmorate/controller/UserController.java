@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.checkers.UserChecker;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -18,43 +18,39 @@ public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
     private final Logger usersLog = LoggerFactory.getLogger(User.class);
 
-    //получение всех фильмов.
+    //получение всех пользователей.
     @GetMapping
     public Collection<User> findAll() {
         return users.values();
     }
 
-    //добавление фильма;
+    //добавление пользователя;
     @PostMapping
-    public User create(@RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
 
-        if (!UserChecker.checkAndLogUser(user, usersLog)) {
-            throw new ValidationException("Валидация не пройдена");
-        }
+        validateLogin(user);
 
         int newId = getNextId();
         user.setId(newId);
-        user.replaceBlankNameToLogin();
+        replaceBlankNameToLogin(user);
         users.put(newId, user);
 
         return user;
     }
 
-    //обновление фильма;
+    //обновление пользователя;
     @PutMapping
-    public User update(@RequestBody User newUser) {
-        //Если проверка не пройдена - не фильм не обновляем
-        if (!UserChecker.checkAndLogUser(newUser, usersLog)) {
-            throw new ValidationException("Валидация не пройдена");
+    public User update(@Valid @RequestBody User newUser) {
+        //Если проверка не пройдена - пользователя не обновляем
+        validateLogin(newUser);
+
+        int userId = newUser.getId();
+        if (!users.containsKey(userId)) {
+            throw new ValidationException("Пользователь с id " + userId + " отсутствует");
         }
 
-        int filmId = newUser.getId();
-        if (!users.containsKey(filmId)) {
-            throw new ValidationException("Пользователь с id " + filmId + " отсутствует");
-        }
-
-        newUser.replaceBlankNameToLogin();
-        users.put(filmId, newUser);
+        replaceBlankNameToLogin(newUser);
+        users.put(userId, newUser);
 
         return newUser;
     }
@@ -67,5 +63,23 @@ public class UserController {
                 .orElse(0);
 
         return ++currentMaxId;
+    }
+
+    private void replaceBlankNameToLogin(User user) {
+        String name = user.getName();
+        if (name == null || name.isBlank()) {
+            user.setName(user.getLogin());
+        }
+    }
+
+    private void validateLogin(User user) {
+        if (user.getLogin().contains(" ")) {
+            usersLog.warn("Логин не может содержать пробелы");
+            throw new ValidationException("Валидация не пройдена");
+        }
+    }
+
+    public void clearUsers() {
+        users.clear();
     }
 }
