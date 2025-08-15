@@ -54,15 +54,14 @@ public class FilmController {
         return newFilm;
     }
 
-    private void validateReleaseDate(Film film) {
+    public void validateReleaseDate(Film film) {
 
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             filmLog.warn("Дата релиза фильма должна быть больше 28 декабря 1895 года");
             throw new ValidationException("Валидация не пройдена");
         }
-
-
     }
+
 
     private int getNextId() {
         int currentMaxId = films.keySet()

@@ -72,7 +72,7 @@ public class UserController {
         }
     }
 
-    private void validateLogin(User user) {
+    public void validateLogin(User user) {
         if (user.getLogin().contains(" ")) {
             usersLog.warn("Логин не может содержать пробелы");
             throw new ValidationException("Валидация не пройдена");
