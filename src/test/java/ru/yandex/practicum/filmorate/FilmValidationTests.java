@@ -80,7 +80,7 @@ public class FilmValidationTests {
         try {
             filmController.validateReleaseDate(film);
             assertFalse(true, "Поле ReleaseDate, валидация 1895.12.28 не пройдена");
-        } catch (ValidationException exp) {
+        } catch (ValidationException ignored) {
             //Если ошибка возникла, то все ок
         }
     }

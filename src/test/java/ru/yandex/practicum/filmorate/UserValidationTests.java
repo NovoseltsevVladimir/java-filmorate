@@ -75,7 +75,7 @@ public class UserValidationTests {
         try {
             userController.validateLogin(user);
             assertFalse(true, "Поле Login, валидация NoSpaces не пройдена");
-        } catch (ValidationException exp) {
+        } catch (ValidationException ignored) {
             //Если ошибка возникла, то все ок
         }
     }
