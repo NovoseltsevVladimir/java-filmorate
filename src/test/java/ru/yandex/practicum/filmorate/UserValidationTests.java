@@ -7,9 +7,12 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -20,6 +23,11 @@ public class UserValidationTests {
 
     private static Validator validator;
     private User user;
+    private UserController userController;
+
+    public UserValidationTests() {
+        this.userController = new UserController(new InMemoryUserStorage(), new UserService());
+    }
 
     @BeforeAll
     static void clearFilms() {
@@ -70,7 +78,6 @@ public class UserValidationTests {
         assertFalse(violations.isEmpty(), "Поле Login, валидация Blank не пройдена");
 
         user.setLogin("Lo g in");
-        UserController userController = new UserController();
 
         try {
             userController.validateLogin(user);

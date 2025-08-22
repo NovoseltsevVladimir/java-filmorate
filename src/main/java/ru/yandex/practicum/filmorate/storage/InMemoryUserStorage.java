@@ -4,6 +4,7 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -42,7 +43,7 @@ public class InMemoryUserStorage implements UserStorage {
 
         int userId = newUser.getId();
         if (!users.containsKey(userId)) {
-            throw new ValidationException("Пользователь с id " + userId + " отсутствует");
+            throw new NotFoundException("Пользователь с id " + userId + " отсутствует");
         }
 
         replaceBlankNameToLogin(newUser);
@@ -85,5 +86,10 @@ public class InMemoryUserStorage implements UserStorage {
             usersLog.warn("Логин не может содержать пробелы");
             throw new ValidationException("Валидация не пройдена");
         }
+    }
+
+    @Override
+    public User getUserById(Integer id) {
+        return users.get(id);
     }
 }

@@ -17,5 +17,7 @@ public interface UserStorage {
 
     public void removeAll();
 
-    public void validateLogin (User user);
+    public void validateLogin(User user);
+
+    public User getUserById(Integer id);
 }

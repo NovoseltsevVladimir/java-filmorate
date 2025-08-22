@@ -3,16 +3,23 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
 
 public class FilmControllerTests {
 
-    FilmController filmController = new FilmController();
+    private FilmController filmController;
+
+    public FilmControllerTests() {
+        this.filmController = new FilmController(new InMemoryFilmStorage(), new InMemoryUserStorage());
+    }
 
     @AfterEach
     void clearFilms() {

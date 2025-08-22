@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -19,6 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class FilmValidationTests {
     private static Validator validator;
     private Film film;
+    private FilmController filmController;
+
+    public FilmValidationTests() {
+        this.filmController = new FilmController(new InMemoryFilmStorage(), new InMemoryUserStorage());
+    }
 
     @BeforeAll
     static void clearFilms() {
@@ -75,7 +82,6 @@ public class FilmValidationTests {
         assertFalse(violations.isEmpty(), "Поле ReleaseDate, валидация NULL не пройдена");
 
         film.setReleaseDate(LocalDate.of(1500, 1, 1));
-        FilmController filmController = new FilmController();
 
         try {
             filmController.validateReleaseDate(film);
