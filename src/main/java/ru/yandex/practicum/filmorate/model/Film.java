@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Film.
@@ -25,5 +26,6 @@ public class Film {
     @NotNull
     @Positive
     private Integer duration;
+    private Set<Integer> usersIdWithLikes;
 
 }
