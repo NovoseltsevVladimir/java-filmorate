@@ -11,8 +11,32 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
+    private UserStorage userStorage;
+
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
+
+    public Collection<User> findAll() {
+        return userStorage.findAll();
+    }
+
+    //добавление пользователя;
+    public User create(User user) {
+        return userStorage.create(user);
+    }
+
+    //обновление пользователя;
+    public User update(User newUser) {
+        return userStorage.update(newUser);
+    }
+
+    public void validateLogin(User user) {
+        userStorage.validateLogin(user);
+    }
+
     //PUT /users/{id}/friends/{friendId} — добавление в друзья.
-    public void addFriend(UserStorage userStorage, int userId, int friendId) {
+    public void addFriend(int userId, int friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
 
@@ -46,11 +70,10 @@ public class UserService {
             friend.setFriends(allFriendsId);
         }
 
-        //return user;
     }
 
     //DELETE /users/{id}/friends/{friendId} — удаление из друзей.
-    public List<User> deleteFriend(UserStorage userStorage, int userId, int friendId) {
+    public List<User> deleteFriend(int userId, int friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
 
@@ -83,7 +106,7 @@ public class UserService {
     }
 
     //GET /users/{id}/friends — возвращаем список пользователей, являющихся его друзьями.
-    public List<User> getFriends(UserStorage userStorage, int userId) {
+    public List<User> getFriends(int userId) {
         User user = userStorage.getUserById(userId);
 
         if (user == null) {
@@ -103,7 +126,7 @@ public class UserService {
     }
 
     //GET /users/{id}/friends/common/{otherId} — список друзей, общих с другим пользователем.
-    public List<User> getCommonFriends(UserStorage userStorage, int userId, int otherId) {
+    public List<User> getCommonFriends(int userId, int otherId) {
         User user = userStorage.getUserById(userId);
         User otherUser = userStorage.getUserById(otherId);
 

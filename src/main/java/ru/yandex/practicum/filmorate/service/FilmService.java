@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,8 +14,33 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
 
+    private FilmStorage filmStorage;
+    private UserStorage userStorage;
+
+    @Autowired
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+    }
+
+    public Collection<Film> findAll() {
+        return filmStorage.findAll();
+    }
+
+    public Film create(Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film newFilm) {
+        return filmStorage.update(newFilm);
+    }
+
+    public void validateReleaseDate(Film film) {
+        filmStorage.validateReleaseDate(film);
+    }
+
     //    PUT /films/{id}/like/{userId} — пользователь ставит лайк фильму.
-    public void addLike(FilmStorage filmStorage, UserStorage userStorage, int filmId, int userId) {
+    public void addLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
 
@@ -38,7 +64,7 @@ public class FilmService {
     }
 
     //    DELETE /films/{id}/like/{userId} — пользователь удаляет лайк.
-    public void deleteLike(FilmStorage filmStorage, UserStorage userStorage, int filmId, int userId) {
+    public void deleteLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
 
@@ -62,7 +88,7 @@ public class FilmService {
 
     //    GET /films/popular?count={count} — возвращает список из первых count фильмов по количеству лайков.
     //    Если значение параметра count не задано, верните первые 10.
-    public List<Film> getPopularFilms(FilmStorage filmStorage, Integer count) {
+    public List<Film> getPopularFilms(Integer count) {
 
         Comparator<Film> filmComparator = (film1, film2) -> {
             int o1 = (film1.getUsersIdWithLikes() == null) ? 0 : film1.getUsersIdWithLikes().size();
@@ -84,6 +110,4 @@ public class FilmService {
 
         return popularFilms;
     }
-
-
 }

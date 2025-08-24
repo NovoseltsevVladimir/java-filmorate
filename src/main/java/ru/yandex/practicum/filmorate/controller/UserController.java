@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,12 +13,10 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @Autowired
-    public UserController(UserStorage userStorage, UserService userService) {
-        this.userStorage = userStorage;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -27,23 +24,19 @@ public class UserController {
     //получение всех пользователей.
     @GetMapping
     public Collection<User> findAll() {
-        return userStorage.findAll();
+        return userService.findAll();
     }
 
     //добавление пользователя;
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        return userStorage.create(user);
+        return userService.create(user);
     }
 
     //обновление пользователя;
     @PutMapping
     public User update(@Valid @RequestBody User newUser) {
-        return userStorage.update(newUser);
-    }
-
-    public void validateLogin(User user) {
-        userStorage.validateLogin(user);
+        return userService.update(newUser);
     }
 
     //PUT /users/{id}/friends/{friendId} — добавление в друзья.
@@ -51,7 +44,7 @@ public class UserController {
     public void putNewFriend(@PathVariable("id") int userId,
                              @PathVariable("friendId") int friendId) {
 
-        userService.addFriend(userStorage, userId, friendId);
+        userService.addFriend(userId, friendId);
     }
 
     //DELETE /users/{id}/friends/{friendId} — удаление из друзей.
@@ -59,14 +52,14 @@ public class UserController {
     public List<User> deleteFriend(@PathVariable("id") int userId,
                                    @PathVariable("friendId") int friendId) {
 
-        return userService.deleteFriend(userStorage, userId, friendId);
+        return userService.deleteFriend(userId, friendId);
     }
 
     //GET /users/{id}/friends — возвращаем список пользователей, являющихся его друзьями.
     @GetMapping("/{id}/friends")
     public List<User> getFriends(@PathVariable("id") int userId) {
 
-        return userService.getFriends(userStorage, userId);
+        return userService.getFriends(userId);
     }
 
     //GET /users/{id}/friends/common/{otherId} — список друзей, общих с другим пользователем.
@@ -74,7 +67,7 @@ public class UserController {
     public List<User> getCommonFriends(@PathVariable("id") int userId,
                                        @PathVariable("otherId") int otherId) {
 
-        return userService.getCommonFriends(userStorage, userId, otherId);
+        return userService.getCommonFriends(userId, otherId);
     }
 
 }

@@ -55,12 +55,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public boolean remove(Film film) {
-        return false;
+    public void remove(Film film) {
+        Integer filmId = film.getId();
+        if (!films.containsKey(filmId)) {
+            throw new NotFoundException("Фильм с id " + filmId + " отсутствует");
+        } else {
+            films.remove(filmId);
+        }
     }
 
-    @Override
-    public int getNextId() {
+    private int getNextId() {
         int currentMaxId = films.keySet()
                 .stream()
                 .mapToInt(id -> id)
@@ -77,10 +81,6 @@ public class InMemoryFilmStorage implements FilmStorage {
             filmLog.warn("Дата релиза фильма должна быть больше 28 декабря 1895 года");
             throw new ValidationException("Валидация не пройдена");
         }
-    }
-
-    public void removeAll() {
-        films.clear();
     }
 
     @Override

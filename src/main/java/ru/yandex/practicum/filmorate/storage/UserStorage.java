@@ -11,11 +11,7 @@ public interface UserStorage {
 
     public User update(User user);
 
-    public boolean remove(User user);
-
-    public int getNextId();
-
-    public void removeAll();
+    public void remove(User user);
 
     public void validateLogin(User user);
 

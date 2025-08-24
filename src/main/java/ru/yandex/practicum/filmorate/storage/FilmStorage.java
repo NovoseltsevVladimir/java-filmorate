@@ -12,11 +12,7 @@ public interface FilmStorage {
 
     public Film update(Film film);
 
-    public boolean remove(Film film);
-
-    public int getNextId();
-
-    public void removeAll();
+    public void remove(Film film);
 
     public void validateReleaseDate(Film film);
 

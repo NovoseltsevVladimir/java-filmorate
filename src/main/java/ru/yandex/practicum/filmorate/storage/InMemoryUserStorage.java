@@ -53,12 +53,17 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public boolean remove(User user) {
-        return false;
+    public void remove(User user) {
+
+        Integer userId = user.getId();
+        if (!users.containsKey(userId)) {
+            throw new NotFoundException("Пользователь с id " + userId + " отсутствует");
+        } else {
+            users.remove(userId);
+        }
     }
 
-    @Override
-    public int getNextId() {
+    private int getNextId() {
         int currentMaxId = users.keySet()
                 .stream()
                 .mapToInt(id -> id)
@@ -67,12 +72,6 @@ public class InMemoryUserStorage implements UserStorage {
 
         return ++currentMaxId;
     }
-
-    @Override
-    public void removeAll() {
-        users.clear();
-    }
-
 
     private void replaceBlankNameToLogin(User user) {
         String name = user.getName();

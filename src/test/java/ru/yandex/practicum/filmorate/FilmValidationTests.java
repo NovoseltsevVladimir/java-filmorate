@@ -7,9 +7,9 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
@@ -19,12 +19,13 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class FilmValidationTests {
+
     private static Validator validator;
     private Film film;
-    private FilmController filmController;
+    private FilmService filmService;
 
     public FilmValidationTests() {
-        this.filmController = new FilmController(new InMemoryFilmStorage(), new InMemoryUserStorage());
+        this.filmService = new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage());
     }
 
     @BeforeAll
@@ -84,7 +85,7 @@ public class FilmValidationTests {
         film.setReleaseDate(LocalDate.of(1500, 1, 1));
 
         try {
-            filmController.validateReleaseDate(film);
+            filmService.validateReleaseDate(film);
             assertFalse(true, "Поле ReleaseDate, валидация 1895.12.28 не пройдена");
         } catch (ValidationException ignored) {
             //Если ошибка возникла, то все ок
