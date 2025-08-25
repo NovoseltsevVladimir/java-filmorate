@@ -20,7 +20,6 @@ public class UserController {
         this.userService = userService;
     }
 
-
     //получение всех пользователей.
     @GetMapping
     public Collection<User> findAll() {

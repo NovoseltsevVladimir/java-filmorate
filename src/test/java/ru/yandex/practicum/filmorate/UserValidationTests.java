@@ -78,7 +78,7 @@ public class UserValidationTests {
         user.setLogin("Lo g in");
 
         try {
-            userService.validateLogin(user);
+            userService.create(user);
             assertFalse(true, "Поле Login, валидация NoSpaces не пройдена");
         } catch (ValidationException ignored) {
             //Если ошибка возникла, то все ок

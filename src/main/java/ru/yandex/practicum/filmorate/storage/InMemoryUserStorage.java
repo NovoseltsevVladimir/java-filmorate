@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -13,11 +11,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@Data
 public class InMemoryUserStorage implements UserStorage {
 
-    private final Map<Integer, User> users = new HashMap<>();
-    private final Logger usersLog = LoggerFactory.getLogger(User.class);
+    private final Map<Integer, User> users;
+    private final Logger usersLog;
+
+    public InMemoryUserStorage() {
+        this.usersLog = LoggerFactory.getLogger(this.getClass());
+        this.users = new HashMap<Integer, User>();
+    }
 
     @Override
     public Collection<User> findAll() {
@@ -26,11 +28,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        validateLogin(user);
 
         int newId = getNextId();
         user.setId(newId);
-        replaceBlankNameToLogin(user);
         users.put(newId, user);
 
         return user;
@@ -38,15 +38,15 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User update(User newUser) {
-        //Если проверка не пройдена - пользователя не обновляем
-        validateLogin(newUser);
 
         int userId = newUser.getId();
         if (!users.containsKey(userId)) {
-            throw new NotFoundException("Пользователь с id " + userId + " отсутствует");
+            String errorMessage = "Пользователь с id " + userId + " отсутствует";
+
+            usersLog.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
         }
 
-        replaceBlankNameToLogin(newUser);
         users.put(userId, newUser);
 
         return newUser;
@@ -57,7 +57,10 @@ public class InMemoryUserStorage implements UserStorage {
 
         Integer userId = user.getId();
         if (!users.containsKey(userId)) {
-            throw new NotFoundException("Пользователь с id " + userId + " отсутствует");
+            String errorMessage = "Пользователь с id " + userId + " отсутствует";
+
+            usersLog.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
         } else {
             users.remove(userId);
         }
@@ -73,22 +76,17 @@ public class InMemoryUserStorage implements UserStorage {
         return ++currentMaxId;
     }
 
-    private void replaceBlankNameToLogin(User user) {
-        String name = user.getName();
-        if (name == null || name.isBlank()) {
-            user.setName(user.getLogin());
-        }
-    }
-
-    public void validateLogin(User user) {
-        if (user.getLogin().contains(" ")) {
-            usersLog.warn("Логин не может содержать пробелы");
-            throw new ValidationException("Валидация не пройдена");
-        }
-    }
-
     @Override
     public User getUserById(Integer id) {
-        return users.get(id);
+        User user = users.get(id);
+        if (user == null) {
+            String errorMessage = "Пользователь с id " + id + " не найден";
+
+            usersLog.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
+        }
+
+        return user;
     }
+
 }

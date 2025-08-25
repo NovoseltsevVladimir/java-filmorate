@@ -14,7 +14,5 @@ public interface FilmStorage {
 
     public void remove(Film film);
 
-    public void validateReleaseDate(Film film);
-
     public Film getFilmById(Integer id);
 }

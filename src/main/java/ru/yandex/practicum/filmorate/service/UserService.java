@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -11,10 +14,13 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private UserStorage userStorage;
+    private final UserStorage userStorage;
+    private final Logger usersLog;
 
+    @Autowired
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
+        this.usersLog = LoggerFactory.getLogger(this.getClass());
     }
 
     public Collection<User> findAll() {
@@ -23,30 +29,32 @@ public class UserService {
 
     //добавление пользователя;
     public User create(User user) {
+        validateLogin(user);
+        replaceBlankNameToLogin(user);
+
         return userStorage.create(user);
     }
 
     //обновление пользователя;
     public User update(User newUser) {
+        //Если проверка не пройдена - пользователя не обновляем
+        validateLogin(newUser);
+        replaceBlankNameToLogin(newUser);
+
         return userStorage.update(newUser);
     }
 
-    public void validateLogin(User user) {
-        userStorage.validateLogin(user);
+    private void replaceBlankNameToLogin(User user) {
+        String name = user.getName();
+        if (name == null || name.isBlank()) {
+            user.setName(user.getLogin());
+        }
     }
 
     //PUT /users/{id}/friends/{friendId} — добавление в друзья.
     public void addFriend(int userId, int friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
-
-        if (user == null) {
-            throw new NotFoundException("Пользователь с id " + userId + "не найден");
-        }
-
-        if (friend == null) {
-            throw new NotFoundException("Пользователь с id " + friendId + "не найден");
-        }
 
         Set<Integer> allFriendsId = user.getFriends();
 
@@ -77,14 +85,6 @@ public class UserService {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
 
-        if (user == null) {
-            throw new NotFoundException("Пользователь с id " + userId + "не найден");
-        }
-
-        if (friend == null) {
-            throw new NotFoundException("Пользователь с id " + friendId + "не найден");
-        }
-
         Set<Integer> allFriendsId = user.getFriends();
         if (allFriendsId != null && allFriendsId.contains(friendId)) {
             allFriendsId.remove(friendId);
@@ -97,7 +97,6 @@ public class UserService {
             friend.setFriends(allFriendsId);
         }
 
-
         List<User> userList = new ArrayList<>();
         userList.add(user);
         userList.add(friend);
@@ -109,15 +108,13 @@ public class UserService {
     public List<User> getFriends(int userId) {
         User user = userStorage.getUserById(userId);
 
-        if (user == null) {
-            throw new NotFoundException("Пользователь с id " + userId + "не найден");
-        }
+        Collection<Integer> userList = user.getFriends();
 
-        if (user.getFriends() == null) {
+        if (userList == null) {
             return new ArrayList<User>();
         }
 
-        List<User> friends = user.getFriends()
+        List<User> friends = userList
                 .stream()
                 .map(currentUserId -> userStorage.getUserById(currentUserId))
                 .filter(currentUser -> currentUser != null)
@@ -130,17 +127,13 @@ public class UserService {
         User user = userStorage.getUserById(userId);
         User otherUser = userStorage.getUserById(otherId);
 
-        if (user == null) {
-            throw new NotFoundException("Пользователь с id " + userId + "не найден");
-        }
-
-        if (otherUser == null) {
-            throw new NotFoundException("Пользователь с id " + otherId + "не найден");
-        }
-
+        Set<Integer> thisFriends = user.getFriends();
         Set<Integer> otherFriends = otherUser.getFriends();
+        if (otherFriends == null || thisFriends == null) {
+            return new ArrayList<User>();
+        }
 
-        List<User> friends = user.getFriends()
+        List<User> friends = thisFriends
                 .stream()
                 .filter(currentId -> otherFriends.contains(currentId))
                 .map(currentUserId -> userStorage.getUserById(currentUserId))
@@ -148,5 +141,14 @@ public class UserService {
                 .collect(Collectors.toList());
 
         return friends;
+    }
+
+    private void validateLogin(User user) {
+        if (user.getLogin().contains(" ")) {
+            String errorMessage = "Логин не может содержать пробелы";
+
+            usersLog.warn(errorMessage);
+            throw new ValidationException(errorMessage);
+        }
     }
 }

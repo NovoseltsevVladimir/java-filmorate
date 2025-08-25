@@ -85,7 +85,7 @@ public class FilmValidationTests {
         film.setReleaseDate(LocalDate.of(1500, 1, 1));
 
         try {
-            filmService.validateReleaseDate(film);
+            filmService.create(film);
             assertFalse(true, "Поле ReleaseDate, валидация 1895.12.28 не пройдена");
         } catch (ValidationException ignored) {
             //Если ошибка возникла, то все ок

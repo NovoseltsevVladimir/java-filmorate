@@ -4,10 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +17,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final Logger filmLog;
 
     public InMemoryFilmStorage() {
-        this.films = new HashMap<>();
-        this.filmLog = LoggerFactory.getLogger(Film.class);
+        this.films = new HashMap<Integer, Film>();
+        this.filmLog = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override
@@ -30,7 +28,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        validateReleaseDate(film);
 
         int newId = getNextId();
         film.setId(newId);
@@ -41,12 +38,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film update(Film newFilm) {
-        //Если проверка не пройдена - фильм не обновляем
-        validateReleaseDate(newFilm);
 
         int filmId = newFilm.getId();
         if (!films.containsKey(filmId)) {
-            throw new NotFoundException("Фильм с id " + filmId + " отсутствует");
+            String errorMessage = "Фильм с id " + filmId + " отсутствует";
+
+            filmLog.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
         }
 
         films.put(filmId, newFilm);
@@ -58,7 +56,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void remove(Film film) {
         Integer filmId = film.getId();
         if (!films.containsKey(filmId)) {
-            throw new NotFoundException("Фильм с id " + filmId + " отсутствует");
+            String errorMessage = "Фильм с id " + filmId + " отсутствует";
+
+            filmLog.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
         } else {
             films.remove(filmId);
         }
@@ -75,16 +76,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void validateReleaseDate(Film film) {
-
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            filmLog.warn("Дата релиза фильма должна быть больше 28 декабря 1895 года");
-            throw new ValidationException("Валидация не пройдена");
-        }
-    }
-
-    @Override
     public Film getFilmById(Integer id) {
-        return films.get(id);
+        Film film = films.get(id);
+        if (film == null) {
+            String errorMessage = "Фильм с id " + id + " отсутствует";
+
+            filmLog.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
+        }
+        return film;
     }
 }
