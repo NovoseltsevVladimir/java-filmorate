@@ -28,5 +28,6 @@ public class Film {
     private Integer duration;
     private Set<Genre> genres;
     private Set<Integer> usersIdWithLikes;
+    private int rating_id;
 
 }
