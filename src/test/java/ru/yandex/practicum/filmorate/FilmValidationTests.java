@@ -25,7 +25,7 @@ public class FilmValidationTests {
     private FilmService filmService;
 
     public FilmValidationTests() {
-        this.filmService = new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage());
+        this.filmService = new FilmService();
     }
 
     @BeforeAll

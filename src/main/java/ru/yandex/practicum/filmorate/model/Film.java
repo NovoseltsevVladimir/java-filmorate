@@ -26,8 +26,9 @@ public class Film {
     @NotNull
     @Positive
     private Integer duration;
-    private Set<Genre> genres;
+    private Set<Integer> genresId;
     private Set<Integer> usersIdWithLikes;
-    private int rating_id;
+    @NotNull
+    private int ratingId;
 
 }

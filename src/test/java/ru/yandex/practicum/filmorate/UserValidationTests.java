@@ -24,7 +24,7 @@ public class UserValidationTests {
     private UserService userService;
 
     public UserValidationTests() {
-        this.userService = new UserService(new InMemoryUserStorage());
+        this.userService = new UserService();
     }
 
     @BeforeAll

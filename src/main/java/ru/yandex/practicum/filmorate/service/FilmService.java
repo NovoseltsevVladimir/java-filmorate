@@ -26,13 +26,6 @@ public class FilmService {
     private final UserStorage userStorage = null;
     private final Logger filmLog = LoggerFactory.getLogger(this.getClass());
 
-//    @Autowired
-//    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
-//        this.filmStorage = filmStorage;
-//        this.userStorage = userStorage;
-//        this.filmLog = LoggerFactory.getLogger(this.getClass());
-//    }
-
     public Collection<Film> findAll() {
         return filmStorage.findAll();
     }

@@ -20,12 +20,6 @@ public class UserService {
     private final UserStorage userStorage = null;
     private final Logger usersLog = LoggerFactory.getLogger(this.getClass());
 
-//    @Autowired
-//    public UserService(UserStorage userStorage) {
-//        this.userStorage = userStorage;
-//        this.usersLog = LoggerFactory.getLogger(this.getClass());
-//    }
-
     public Collection<User> findAll() {
         return userStorage.findAll();
     }

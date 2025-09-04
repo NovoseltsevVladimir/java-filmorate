@@ -15,7 +15,7 @@ public class RatingRepository extends BaseRepository<Rating> {
 
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM rating WHERE id = ?";
     private static final String FIND_ALL = "SELECT * FROM rating";
-    private static final String INSERT_QUERY = "INSERT INTO rating(name) VALUES (?) returning id";
+    private static final String INSERT_QUERY = "INSERT INTO rating(name) VALUES (?)";
     private static final String UPDATE_QUERY = "UPDATE rating SET name = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM rating WHERE id = ?";
 

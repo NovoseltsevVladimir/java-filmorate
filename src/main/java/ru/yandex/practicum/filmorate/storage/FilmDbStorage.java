@@ -30,7 +30,6 @@ public class FilmDbStorage implements FilmStorage{
 
     @Override
     public Film create(Film film) {
-        //Лайки
         return repository.save(film);
     }
 
@@ -69,9 +68,12 @@ public class FilmDbStorage implements FilmStorage{
     public Film getFilmById(Integer id) {
         Optional<Film> optionalFilm = repository.findById(id);
         if (optionalFilm.isEmpty()) {
-            return null;
+            String errorMessage = "Фильм с id " + id + " отсутствует";
+            log.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
         } else {
             return optionalFilm.get();
         }
     }
+
 }
