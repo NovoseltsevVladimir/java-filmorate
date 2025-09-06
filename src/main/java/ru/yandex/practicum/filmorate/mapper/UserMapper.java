@@ -15,8 +15,6 @@ public class UserMapper {
             user.setName(request.getName());
             user.setEmail(request.getEmail());
             user.setBirthday(request.getBirthday());
-            user.setFriends(request.getFriends());
-            user.setFriendRequests(request.getFriendRequests());
 
             return user;
         }

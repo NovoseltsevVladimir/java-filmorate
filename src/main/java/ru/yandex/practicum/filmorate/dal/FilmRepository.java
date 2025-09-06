@@ -18,10 +18,10 @@ public class FilmRepository extends BaseRepository<Film> {
 
     private static final String FIND_BY_ID_QUERY  = "SELECT * FROM film WHERE id = ?";
     private static final String FIND_ALL  = "SELECT * FROM film";
-    private static final String INSERT_QUERY = "INSERT INTO film(name, description, releaseDate,duration,rating_id) " +
-            "VALUES (?, ?, ?, ?, ?)";
+    private static final String INSERT_QUERY = "INSERT INTO film(name, description, releaseDate,duration) " +
+            "VALUES (?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, releaseDate = ?, "+
-          "duration = ?,rating_id = ? WHERE id = ?";
+          "duration = ?,mpa = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM film WHERE id = ?";
 
     private static final String INSERT_LIKES = "INSERT INTO film_like(film_id, user_id) " +
@@ -53,8 +53,7 @@ public class FilmRepository extends BaseRepository<Film> {
                 film.getName(),
                 film.getDescription(),
                 Timestamp.valueOf(film.getReleaseDate().atStartOfDay()),
-                film.getDuration(),
-                (film.getMpa()>0) ? film.getMpa():null
+                film.getDuration()
         );
 
         for (int userId:film.getUsersIdWithLikes()) {
@@ -65,11 +64,11 @@ public class FilmRepository extends BaseRepository<Film> {
             );
         }
 
-        for (int genreId:film.getGenres()) {
+        for (Genre genre:film.getGenres()) {
             insert(
                     INSERT_GENRES,
                     filmId,
-                    genreId
+                    genre.getId()
             );
         }
 
@@ -98,16 +97,16 @@ public class FilmRepository extends BaseRepository<Film> {
         for (int userId:film.getUsersIdWithLikes()) {
             insert(
                     INSERT_LIKES,
-                    film,
-                    filmId
+                    filmId,
+                    userId
             );
         }
 
-        for (int genreId:film.getGenres()) {
+        for (Genre genre:film.getGenres()) {
             insert(
                     INSERT_GENRES,
                     filmId,
-                    genreId
+                    genre.getId()
             );
         }
 

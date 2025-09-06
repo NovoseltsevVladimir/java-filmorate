@@ -22,6 +22,4 @@ public class NewUserRequest {
     @NotNull
     @PastOrPresent
     private LocalDate birthday;
-    private Set<Integer> friends; // для принятых запросов
-    private Set<Integer> friendRequests;
 }

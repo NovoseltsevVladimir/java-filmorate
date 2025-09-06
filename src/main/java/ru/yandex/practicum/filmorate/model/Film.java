@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,11 +11,10 @@ import java.util.Set;
 /**
  * Film.
  */
-@Getter
-@Setter
+@Data
 public class Film {
 
-    private int id;
+    private Integer id;
     @NotNull
     @NotBlank
     private String name;
@@ -26,8 +26,8 @@ public class Film {
     @NotNull
     @Positive
     private Integer duration;
-    private Set<Integer> genres;
+    private Set<Genre> genres;
     private Set<Integer> usersIdWithLikes;
-    private Integer mpa;
+    private Rating mpa;
 
 }

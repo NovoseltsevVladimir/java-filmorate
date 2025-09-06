@@ -18,11 +18,6 @@ public class FilmRowMapper implements RowMapper<Film> {
         film.setReleaseDate(resultSet.getTimestamp("releaseDate").toLocalDateTime().toLocalDate());
         film.setDuration(resultSet.getInt("duration"));
 
-        int rating_id = resultSet.getInt("mpa");
-        if (rating_id != 0) {
-            film.setMpa(rating_id);
-        }
-
         return film;
     }
 }
