@@ -4,7 +4,6 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 public class UpdateFilmRequest {
@@ -16,19 +15,22 @@ public class UpdateFilmRequest {
     private Rating mpa;
 
     public boolean hasName() {
-        return ! (name == null || name.isBlank());
+        return !(name == null || name.isBlank());
     }
+
     public boolean hasDescription() {
-        return ! (description == null || description.isBlank());
+        return !(description == null || description.isBlank());
     }
+
     public boolean hasReleaseDate() {
-        return ! (releaseDate == null);
+        return !(releaseDate == null);
     }
+
     public boolean hasDuration() {
-        return ! (duration == null);
+        return !(duration == null);
     }
 
     public boolean hasMpa() {
-        return ! (mpa == null);
+        return !(mpa == null);
     }
 }

@@ -7,19 +7,15 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.FilmRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component()
 @Qualifier("FilmDbStorage")
-public class FilmDbStorage implements FilmStorage{
+public class FilmDbStorage implements FilmStorage {
 
     private final FilmRepository repository;
     private final Logger log;
@@ -88,12 +84,12 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     @Override
-    public Rating getFilmMpa (Film film) {
+    public Rating getFilmMpa(Film film) {
         return repository.getFilmMpa(film);
     }
 
     @Override
-    public List<Integer> getFilmLikes (Film film) {
+    public List<Integer> getFilmLikes(Film film) {
         return repository.getFilmLikes(film);
     }
 

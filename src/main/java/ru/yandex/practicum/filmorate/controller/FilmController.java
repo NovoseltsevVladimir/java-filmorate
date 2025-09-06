@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
@@ -44,7 +43,7 @@ public class FilmController {
     //    PUT /films/{id}/like/{userId} — пользователь ставит лайк фильму.
     @PutMapping("/{id}/like/{userId}")
     public FilmDto putNewLike(@PathVariable("id") int filmId,
-                           @PathVariable("userId") int userId) {
+                              @PathVariable("userId") int userId) {
 
         return filmService.addLike(filmId, userId);
     }
@@ -52,7 +51,7 @@ public class FilmController {
     //    DELETE /films/{id}/like/{userId} — пользователь удаляет лайк.
     @DeleteMapping("/{id}/like/{userId}")
     public FilmDto deleteLike(@PathVariable("id") int filmId,
-                           @PathVariable("userId") int userId) {
+                              @PathVariable("userId") int userId) {
 
         return filmService.deleteLike(filmId, userId);
     }

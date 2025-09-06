@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
+
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,9 @@ import org.springframework.context.annotation.Import;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Optional;
+
+import static org.junit.Assert.assertThat;
 
 @JdbcTest
 @AutoConfigureTestDatabase
@@ -21,7 +24,11 @@ class FilmorateApplicationTests {
     @Test
     public void testFindUserById() {
 
-       User user = userStorage.getUserById(1);
-       assertEquals(user,null);
+        Optional<User> userOptional = Optional.ofNullable(userStorage.getUserById(1));
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user ->
+                        assertThat(user).hasFieldOrPropertyWithValue("id", 1)
+                );
     }
-}
+} 

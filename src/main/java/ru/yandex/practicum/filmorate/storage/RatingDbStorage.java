@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.RatingRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -27,7 +26,7 @@ public class RatingDbStorage {
         if (optionalRating.isEmpty()) {
             String errorMessage = "Рейтинг с id " + id + " не найден";
             log.warn(errorMessage);
-            throw new NotFoundException (errorMessage);
+            throw new NotFoundException(errorMessage);
         } else {
             return optionalRating.get();
         }

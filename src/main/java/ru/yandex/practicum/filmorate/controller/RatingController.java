@@ -27,7 +27,7 @@ public class RatingController {
     }
 
     @GetMapping("/{id}")
-    public Rating getById (@PathVariable("id") int id) {
+    public Rating getById(@PathVariable("id") int id) {
 
         return ratingService.getById(id);
     }

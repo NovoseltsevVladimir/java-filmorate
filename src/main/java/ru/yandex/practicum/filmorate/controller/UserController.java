@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
@@ -45,7 +43,7 @@ public class UserController {
     //PUT /users/{id}/friends/{friendId} — добавление в друзья.
     @PutMapping("/{id}/friends/{friendId}")
     public List<UserDto> putNewFriend(@PathVariable("id") int userId,
-                             @PathVariable("friendId") int friendId) {
+                                      @PathVariable("friendId") int friendId) {
 
         return userService.addFriend(userId, friendId);
     }
@@ -53,7 +51,7 @@ public class UserController {
     //DELETE /users/{id}/friends/{friendId} — удаление из друзей.
     @DeleteMapping("/{id}/friends/{friendId}")
     public List<UserDto> deleteFriend(@PathVariable("id") int userId,
-                                   @PathVariable("friendId") int friendId) {
+                                      @PathVariable("friendId") int friendId) {
 
         return userService.deleteFriend(userId, friendId);
     }
@@ -68,7 +66,7 @@ public class UserController {
     //GET /users/{id}/friends/common/{otherId} — список друзей, общих с другим пользователем.
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<UserDto> getCommonFriends(@PathVariable("id") int userId,
-                                       @PathVariable("otherId") int otherId) {
+                                          @PathVariable("otherId") int otherId) {
 
         return userService.getCommonFriends(userId, otherId);
     }

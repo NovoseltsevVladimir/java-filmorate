@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.dal;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,7 +11,6 @@ import ru.yandex.practicum.filmorate.exception.NotSaveException;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +33,7 @@ public class BaseRepository<T> {
     }
 
     protected List<T> findMany(String query, Object... params) {
-       return jdbc.query(query, mapper, params);
+        return jdbc.query(query, mapper, params);
     }
 
     public boolean delete(String query, int id) {

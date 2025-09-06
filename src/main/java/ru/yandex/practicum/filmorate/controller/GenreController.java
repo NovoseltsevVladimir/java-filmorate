@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.GenreService;
 
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @RequestMapping("/genres")
@@ -26,8 +24,8 @@ public class GenreController {
     }
 
     @GetMapping("/{id}")
-    public Genre getGenreById (@PathVariable("id") int genreId) {
+    public Genre getGenreById(@PathVariable("id") int genreId) {
 
-       return genreService.getById(genreId);
+        return genreService.getById(genreId);
     }
 }

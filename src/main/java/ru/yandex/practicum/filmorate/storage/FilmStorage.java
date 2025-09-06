@@ -21,7 +21,7 @@ public interface FilmStorage {
 
     public List<Integer> getFilmGenreId(Film film);
 
-    public Rating getFilmMpa (Film film);
+    public Rating getFilmMpa(Film film);
 
-    public List<Integer> getFilmLikes (Film film);
+    public List<Integer> getFilmLikes(Film film);
 }

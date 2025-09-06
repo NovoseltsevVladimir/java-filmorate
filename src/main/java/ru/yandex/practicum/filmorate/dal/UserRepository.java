@@ -1,12 +1,9 @@
 package ru.yandex.practicum.filmorate.dal;
 
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dal.mappers.UserRowMapper;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
@@ -14,28 +11,27 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public class UserRepository extends BaseRepository<User> {
 
-    private static final String FIND_BY_ID_QUERY  = "SELECT * FROM filmorate_user WHERE id = ?";
-    private static final String FIND_ALL  = "SELECT * FROM filmorate_user";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM filmorate_user WHERE id = ?";
+    private static final String FIND_ALL = "SELECT * FROM filmorate_user";
     private static final String INSERT_QUERY = "INSERT INTO filmorate_user (name, login, email, birthday) " +
             "VALUES (?, ?, ?, ?)";
-    private static final String UPDATE_QUERY = "UPDATE filmorate_user SET name = ?, login = ?, email = ?, "+
+    private static final String UPDATE_QUERY = "UPDATE filmorate_user SET name = ?, login = ?, email = ?, " +
             "birthday = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM filmorate_user WHERE id = ?";
 
-    private static final String ADD_FRIENDS_QUERY = "INSERT INTO friendship (user_id,friend_id,approved)"+
+    private static final String ADD_FRIENDS_QUERY = "INSERT INTO friendship (user_id,friend_id,approved)" +
             "VALUES (?, ?, ?)";
 
     private static final String DELETE_FRIENDS_QUERY = "DELETE FROM friendship WHERE user_id = ?";
 
-    private static final String FIND_FRIENDS_BY_ID_QUERY  = "SELECT friend_id FROM friendship WHERE approved"+
+    private static final String FIND_FRIENDS_BY_ID_QUERY = "SELECT friend_id FROM friendship WHERE approved" +
             " AND user_id = ?";
 
-    private static final String DELETE_FRIEND_QUERY  = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
+    private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
 
     public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper, User.class);
@@ -60,7 +56,7 @@ public class UserRepository extends BaseRepository<User> {
                 Timestamp.valueOf(user.getBirthday().atStartOfDay())
         );
 
-        for (Integer friendId:user.getFriends()) {
+        for (Integer friendId : user.getFriends()) {
             insert(
                     ADD_FRIENDS_QUERY,
                     userId,
@@ -85,7 +81,7 @@ public class UserRepository extends BaseRepository<User> {
                 user.getId()
         );
 
-        if (user.getFriends()!=null) {
+        if (user.getFriends() != null) {
             delete(DELETE_FRIENDS_QUERY, userId);
 
             for (Integer friendId : user.getFriends()) {
@@ -101,13 +97,13 @@ public class UserRepository extends BaseRepository<User> {
         return user;
     }
 
-    public User updateFriends (User user) {
+    public User updateFriends(User user) {
 
         int userId = user.getId();
 
-        delete(DELETE_FRIENDS_QUERY,userId);
+        delete(DELETE_FRIENDS_QUERY, userId);
 
-        for (Integer friendId:user.getFriends()) {
+        for (Integer friendId : user.getFriends()) {
             insert(
                     ADD_FRIENDS_QUERY,
                     userId,
@@ -128,10 +124,10 @@ public class UserRepository extends BaseRepository<User> {
         return rowsDeleted > 0;
     }
 
-    public List<Integer> getFriends (User user) {
+    public List<Integer> getFriends(User user) {
         int userId = user.getId();
 
-        RowMapper <Integer> mapper = new RowMapper<Integer>() {
+        RowMapper<Integer> mapper = new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return rs.getInt("friend_id");

@@ -73,7 +73,7 @@ public class UserDbStorage implements UserStorage {
     public void removeFriend(User user, Integer friendId) {
 
         if (user.getFriends().contains(friendId)) {
-            repository.deleteFriend(user.getId(),friendId);
+            repository.deleteFriend(user.getId(), friendId);
         } else {
             String errorMessage = "Пользователь с id " + friendId + " не добавлен в друзья";
             log.warn(errorMessage);
@@ -107,7 +107,7 @@ public class UserDbStorage implements UserStorage {
                 .collect(Collectors.toList());
     }
 
-    private User fillUserFriends (User user) {
+    private User fillUserFriends(User user) {
 
         user.setFriends(new HashSet<>(repository.getFriends(user)));
         return user;
