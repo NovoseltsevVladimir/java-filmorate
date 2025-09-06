@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dal;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -18,6 +19,7 @@ public class RatingRepository extends BaseRepository<Rating> {
     private static final String UPDATE_QUERY = "UPDATE rating SET name = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM rating WHERE id = ?";
 
+    @Autowired
     public RatingRepository(JdbcTemplate jdbc, RowMapper<Rating> mapper) {
         super(jdbc, mapper, Rating.class);
         this.repositoryLog = LoggerFactory.getLogger(this.getClass());

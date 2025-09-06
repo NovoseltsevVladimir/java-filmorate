@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.RatingRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -16,6 +17,7 @@ public class RatingDbStorage {
     private final RatingRepository repository;
     private final Logger log;
 
+    @Autowired
     public RatingDbStorage(RatingRepository repository) {
         this.repository = repository;
         this.log = LoggerFactory.getLogger(this.getClass());

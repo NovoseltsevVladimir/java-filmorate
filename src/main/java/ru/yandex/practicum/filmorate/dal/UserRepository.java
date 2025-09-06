@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dal;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -33,6 +34,7 @@ public class UserRepository extends BaseRepository<User> {
 
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
 
+    @Autowired
     public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper, User.class);
         this.repositoryLog = LoggerFactory.getLogger(this.getClass());

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dal;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -18,6 +19,7 @@ public class GenreRepository extends BaseRepository<Genre> {
     private static final String UPDATE_QUERY = "UPDATE genre SET name = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM genre WHERE id = ?";
 
+    @Autowired
     public GenreRepository(JdbcTemplate jdbc, RowMapper<Genre> mapper) {
         super(jdbc, mapper, Genre.class);
         this.repositoryLog = LoggerFactory.getLogger(this.getClass());

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.FilmRepository;
@@ -13,13 +14,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@Component()
+@Component
 @Qualifier("FilmDbStorage")
 public class FilmDbStorage implements FilmStorage {
 
     private final FilmRepository repository;
     private final Logger log;
 
+    @Autowired
     public FilmDbStorage(FilmRepository repository) {
         this.repository = repository;
         this.log = LoggerFactory.getLogger(this.getClass());

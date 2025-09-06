@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dal;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -42,6 +43,7 @@ public class FilmRepository extends BaseRepository<Film> {
 
     private static final String FIND_FILM_LIKES = "SELECT * FROM film_like WHERE film_id = ?";
 
+    @Autowired
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper, Film.class);
         this.repositoryLog = LoggerFactory.getLogger(this.getClass());
