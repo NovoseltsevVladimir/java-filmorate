@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -85,5 +86,10 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException(errorMessage);
         }
         return film;
+    }
+
+    @Override
+    public List<Integer> getFilmGenreId(Film film) {
+        return List.of();
     }
 }

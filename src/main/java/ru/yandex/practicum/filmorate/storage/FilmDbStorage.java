@@ -7,9 +7,14 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.FilmRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component()
 @Qualifier("FilmDbStorage")
@@ -74,6 +79,11 @@ public class FilmDbStorage implements FilmStorage{
         } else {
             return optionalFilm.get();
         }
+    }
+
+    @Override
+    public List<Integer> getFilmGenreId(Film film) {
+        return repository.getFilmGenreId(film);
     }
 
 }

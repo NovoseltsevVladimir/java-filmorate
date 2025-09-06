@@ -42,6 +42,7 @@ public class FilmService {
 
         return filmStorage.findAll()
                 .stream()
+                .map(film -> initializeGenres(film))
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
@@ -49,8 +50,9 @@ public class FilmService {
     public FilmDto getById (int id) {
         Film film = filmStorage.getFilmById(id);
         checkAndInitializeLists(film);
+        initializeGenres(film);
 
-        return FilmMapper.mapToFilmDto(filmStorage.getFilmById(id));
+        return FilmMapper.mapToFilmDto(film);
     }
 
     public FilmDto create(NewFilmRequest request) {
@@ -76,6 +78,7 @@ public class FilmService {
         validateAndFillGenres(film);
         checkAndInitializeLists (newFilm);
         newFilm = filmStorage.update(newFilm);
+        newFilm = initializeGenres(newFilm);
 
         return FilmMapper.mapToFilmDto(newFilm);
     }
@@ -164,6 +167,7 @@ public class FilmService {
                 .stream()
                 .sorted(filmComparator)
                 .limit(count)
+                .map(film -> initializeGenres(film))
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
 
@@ -178,6 +182,17 @@ public class FilmService {
         if (film.getGenres()==null) {
             film.setGenres(new HashSet<>());
         }
+    }
+
+    private Film initializeGenres (Film film) {
+       List <Genre> genres = filmStorage.getFilmGenreId(film)
+                .stream()
+                .map(genreId -> genreStorage.getById(genreId))
+                .collect(Collectors.toList());
+
+       film.setGenres(new HashSet<>(genres));
+
+       return film;
     }
 
 }

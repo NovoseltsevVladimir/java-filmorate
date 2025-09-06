@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +35,8 @@ public class FilmRepository extends BaseRepository<Film> {
             "VALUES (?, ?)";
 
     private static final String DELETE_GENRES = "DELETE FROM film_genre WHERE film_id = ?";
+
+    private static final String FIND_FILM_GENRES = "SELECT * FROM film_genre WHERE film_id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper, Film.class);
@@ -117,5 +121,19 @@ public class FilmRepository extends BaseRepository<Film> {
     public boolean delete(int id) {
 
         return delete(DELETE_QUERY, id);
+    }
+
+    public List <Integer> getFilmGenreId (Film film) {
+        int filmId = film.getId();
+
+        RowMapper <Integer> mapper = new RowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getInt("genre_id");
+            }
+        };
+
+        return jdbc.query(FIND_FILM_GENRES, mapper, filmId);
+
     }
 }
