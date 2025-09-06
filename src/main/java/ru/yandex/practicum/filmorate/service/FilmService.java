@@ -186,9 +186,9 @@ public class FilmService {
     }
 
     private void validateMpa(Film film) {
-        Rating Mpa = film.getMpa();
-        if (Mpa != null) {
-            mpaStorage.getById(Mpa.getId()); //если не найдено - будет ошибка
+        Rating mpa = film.getMpa();
+        if (mpa != null) {
+            mpaStorage.getById(mpa.getId()); //если не найдено - будет ошибка
         }
     }
 
