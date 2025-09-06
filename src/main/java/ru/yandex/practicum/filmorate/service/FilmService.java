@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
@@ -34,12 +35,14 @@ public class FilmService {
 
     public Film create(Film film) {
         validateReleaseDate(film);
+        checkAndInitializeLists (film);
         return filmStorage.create(film);
     }
 
     public Film update(Film newFilm) {
         //Если проверка не пройдена - фильм не обновляем
         validateReleaseDate(newFilm);
+        checkAndInitializeLists (newFilm);
         return filmStorage.update(newFilm);
     }
 
@@ -58,13 +61,10 @@ public class FilmService {
         Film film = filmStorage.getFilmById(filmId);
         //Проверить есть ли в хранилище пользователь, отдельная переменная не нужна
         userStorage.getUserById(userId);
-
+        checkAndInitializeLists (film);
         Set<Integer> allLikesId = film.getUsersIdWithLikes();
-        if (allLikesId == null) {
-            allLikesId = new HashSet<>();
-            allLikesId.add(userId);
-            film.setUsersIdWithLikes(allLikesId);
-        } else if (!allLikesId.contains(userId)) {
+
+        if (!allLikesId.contains(userId)) {
             allLikesId.add(userId);
             film.setUsersIdWithLikes(allLikesId);
         }
@@ -75,9 +75,10 @@ public class FilmService {
         Film film = filmStorage.getFilmById(filmId);
         //Проверить есть ли в хранилище пользователь, отдельная переменная не нужна
         userStorage.getUserById(userId);
+        checkAndInitializeLists (film);
 
         Set<Integer> allLikesId = film.getUsersIdWithLikes();
-        if (allLikesId == null || !allLikesId.contains(userId)) {
+        if (!allLikesId.contains(userId)) {
             String errorMessage = "Пользователь с id " + userId + "не ставил лайк фильму с id" + filmId;
 
             filmLog.warn(errorMessage);
@@ -116,5 +117,17 @@ public class FilmService {
                 .collect(Collectors.toList());
 
         return popularFilms;
+    }
+
+    private void checkAndInitializeLists (Film film) {
+        if (film.getUsersIdWithLikes()==null) {
+            film.setUsersIdWithLikes(new HashSet<>());
+        }
+
+        if (film.getGenres()==null) {
+            film.setGenres(new HashSet<>());
+        }
+
+
     }
 }

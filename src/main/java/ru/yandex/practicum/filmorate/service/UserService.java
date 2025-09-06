@@ -5,11 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
@@ -68,11 +66,10 @@ public class UserService {
 
     //PUT /users/{id}/friends/{friendId} — добавление в друзья.
     public List<UserDto> addFriend(int userId, int friendId) {
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
 
+        User user = userStorage.getUserById(userId);
+        User friend = userStorage.getUserById(friendId); // для проверки существования
         checkAndInitializeLists(user); //инициализация списков, если не установлены
-        checkAndInitializeLists(friend);
 
         Set<Integer> allFriendsId = user.getFriends();
 
@@ -81,24 +78,19 @@ public class UserService {
             user.setFriends(allFriendsId);
         }
 
-        allFriendsId = friend.getFriends();
-
-        if (!allFriendsId.contains(userId)) {
-            allFriendsId.add(userId);
-            friend.setFriends(allFriendsId);
-        }
-
-        userStorage.updateFriends(friend);
         userStorage.updateFriends(user);
 
-        return getFriends(userId);
+        return userStorage.getFriends(user)
+                .stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toList());
 
     }
 
     //DELETE /users/{id}/friends/{friendId} — удаление из друзей.
     public List<UserDto> deleteFriend(int userId, int friendId) {
         User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
+        User friend = userStorage.getUserById(friendId); // для проверки существования
 
         checkAndInitializeLists(user); //инициализация списков, если не установлены
 
@@ -106,27 +98,9 @@ public class UserService {
         if (allFriendsId.contains(friendId)) {
             allFriendsId.remove(friendId);
             user.setFriends(allFriendsId);
-        } else {
-            String errorMessage = "Пользователь с id "+friendId+" не найден";
-            usersLog.warn(errorMessage);
-            throw new NotFoundException(errorMessage);
         }
 
-//        allFriendsId = friend.getFriends();
-//        if (allFriendsId != null && allFriendsId.contains(userId)) {
-//            allFriendsId.remove(userId);
-//            friend.setFriends(allFriendsId);
-//        }
-
-//        List<User> userList = new ArrayList<>();
-//        userList.add(user);
-//        userList.add(friend);
-
-//        List<UserDto> userList = new ArrayList<>();
-//        userList.add(UserMapper.mapToUserDto(user));
-//        userList.add(UserMapper.mapToUserDto(friend));
-//
-//        return userList;
+        userStorage.updateFriends(user);
 
         return getFriends(userId);
     }
@@ -136,22 +110,16 @@ public class UserService {
         User user = userStorage.getUserById(userId);
         checkAndInitializeLists(user); //инициализация списков, если не установлены
 
-        List<UserDto> friends = user.getFriends()
+        return userStorage.getFriends(user)
                 .stream()
-                .map(currentUserId -> userStorage.getUserById(currentUserId))
-                .filter(currentUser -> currentUser != null)
                 .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
-        return friends;
     }
 
     //GET /users/{id}/friends/common/{otherId} — список друзей, общих с другим пользователем.
     public List<UserDto> getCommonFriends(int userId, int otherId) {
         User user = userStorage.getUserById(userId);
         User otherUser = userStorage.getUserById(otherId);
-
-        checkAndInitializeLists(user); //инициализация списков, если не установлены
-        checkAndInitializeLists(otherUser); //инициализация списков, если не установлены
 
         List<UserDto> friends = user.getFriends()
                 .stream()

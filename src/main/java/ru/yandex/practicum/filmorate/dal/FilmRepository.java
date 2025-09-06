@@ -54,7 +54,7 @@ public class FilmRepository extends BaseRepository<Film> {
                 film.getDescription(),
                 Timestamp.valueOf(film.getReleaseDate().atStartOfDay()),
                 film.getDuration(),
-                film.getRatingId()
+                (film.getMpa()>0) ? film.getMpa():null
         );
 
         for (int userId:film.getUsersIdWithLikes()) {
@@ -65,7 +65,7 @@ public class FilmRepository extends BaseRepository<Film> {
             );
         }
 
-        for (int genreId:film.getGenresId()) {
+        for (int genreId:film.getGenres()) {
             insert(
                     INSERT_GENRES,
                     filmId,
@@ -88,7 +88,7 @@ public class FilmRepository extends BaseRepository<Film> {
                 film.getDescription(),
                 Timestamp.valueOf(film.getReleaseDate().atStartOfDay()),
                 film.getDuration(),
-                film.getRatingId(),
+                film.getMpa(),
                 filmId
         );
 
@@ -103,7 +103,7 @@ public class FilmRepository extends BaseRepository<Film> {
             );
         }
 
-        for (int genreId:film.getGenresId()) {
+        for (int genreId:film.getGenres()) {
             insert(
                     INSERT_GENRES,
                     filmId,

@@ -22,6 +22,6 @@ public class User {
     @NotNull
     @PastOrPresent
     private LocalDate birthday;
-    private Set<Integer> friends = new HashSet<>(); // для принятых запросов
-    private Set<Integer> friendRequests = new HashSet<>();  //для непринятых запросов
+    private Set<Integer> friends; // для принятых запросов
+    private Set<Integer> friendRequests;  //для непринятых запросов
 }

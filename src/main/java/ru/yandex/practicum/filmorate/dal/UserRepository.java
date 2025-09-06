@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.dal.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +34,8 @@ public class UserRepository extends BaseRepository<User> {
 
     private static final String FIND_FRIENDS_BY_ID_QUERY  = "SELECT friend_id FROM friendship WHERE approved"+
             " AND user_id = ?";
+
+    private static final String DELETE_FRIEND_QUERY  = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
 
     public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper, User.class);
@@ -113,14 +117,30 @@ public class UserRepository extends BaseRepository<User> {
         }
 
         return user;
-
     }
 
     public boolean delete(int id) {
         return delete(DELETE_QUERY, id);
     }
 
+    public boolean deleteFriend(int userId, int friendId) {
+        int rowsDeleted = jdbc.update(DELETE_FRIEND_QUERY, userId, friendId);
+        return rowsDeleted > 0;
+    }
 
+    public List<Integer> getFriends (User user) {
+        int userId = user.getId();
+
+        RowMapper <Integer> mapper = new RowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getInt("friend_id");
+            }
+        };
+
+        return jdbc.query(FIND_FRIENDS_BY_ID_QUERY, mapper, userId);
+
+    }
 
 
 }
