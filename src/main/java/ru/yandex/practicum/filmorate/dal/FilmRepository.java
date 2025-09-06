@@ -31,7 +31,6 @@ public class FilmRepository extends BaseRepository<Film> {
     private static final String INSERT_GENRES = "INSERT INTO film_genre(film_id, genre_id) " +
             "VALUES (?, ?)";
     private static final String DELETE_GENRES = "DELETE FROM film_genre WHERE film_id = ?";
-
     private static final String FIND_FILM_GENRES = "SELECT * FROM film_genre WHERE film_id = ? Order BY genre_id ASC";
 
     private static final String FIND_FILM_MPA = "SELECT * FROM rating " +
