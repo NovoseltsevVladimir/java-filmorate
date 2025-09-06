@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -85,5 +87,20 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException(errorMessage);
         }
         return film;
+    }
+
+    @Override
+    public List<Integer> getFilmGenreId(Film film) {
+        return List.of();
+    }
+
+    @Override
+    public Rating getFilmMpa(Film film) {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getFilmLikes(Film film) {
+        return List.of();
     }
 }

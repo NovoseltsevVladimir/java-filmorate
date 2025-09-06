@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -87,6 +88,21 @@ public class InMemoryUserStorage implements UserStorage {
         }
 
         return user;
+    }
+
+    @Override
+    public User updateFriends(User user) {
+        return null;
+    }
+
+    @Override
+    public List<User> getFriends(User user) {
+        return List.of();
+    }
+
+    @Override
+    public void removeFriend(User user, Integer friendId) {
+
     }
 
 }
