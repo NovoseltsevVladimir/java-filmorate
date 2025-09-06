@@ -28,7 +28,6 @@ public class UserMapper {
         dto.setEmail(user.getEmail());
         dto.setBirthday(user.getBirthday());
         dto.setFriends(user.getFriends());
-        dto.setFriendRequests(user.getFriendRequests());
 
         return dto;
     }

@@ -23,15 +23,11 @@ public class UserRepository extends BaseRepository<User> {
     private static final String UPDATE_QUERY = "UPDATE filmorate_user SET name = ?, login = ?, email = ?, " +
             "birthday = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM filmorate_user WHERE id = ?";
-
-    private static final String ADD_FRIENDS_QUERY = "INSERT INTO friendship (user_id,friend_id,approved)" +
-            "VALUES (?, ?, ?)";
+    private static final String ADD_FRIENDS_QUERY = "INSERT INTO friendship (user_id,friend_id)" +
+            "VALUES (?, ?)";
 
     private static final String DELETE_FRIENDS_QUERY = "DELETE FROM friendship WHERE user_id = ?";
-
-    private static final String FIND_FRIENDS_BY_ID_QUERY = "SELECT friend_id FROM friendship WHERE approved" +
-            " AND user_id = ?";
-
+    private static final String FIND_FRIENDS_BY_ID_QUERY = "SELECT friend_id FROM friendship WHERE user_id = ?";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
 
     @Autowired
@@ -62,8 +58,7 @@ public class UserRepository extends BaseRepository<User> {
             insert(
                     ADD_FRIENDS_QUERY,
                     userId,
-                    friendId,
-                    true
+                    friendId
             );
         }
 
@@ -90,8 +85,7 @@ public class UserRepository extends BaseRepository<User> {
                 insert(
                         ADD_FRIENDS_QUERY,
                         userId,
-                        friendId,
-                        true
+                        friendId
                 );
             }
         }
@@ -109,8 +103,7 @@ public class UserRepository extends BaseRepository<User> {
             insert(
                     ADD_FRIENDS_QUERY,
                     userId,
-                    friendId,
-                    true
+                    friendId
             );
         }
 

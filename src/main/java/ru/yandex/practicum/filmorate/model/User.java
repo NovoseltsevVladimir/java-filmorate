@@ -7,13 +7,15 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
 public class User {
 
     private Integer id;
+    @NotNull
+    @NotBlank
+    @Email
     private String email;
     @NotNull
     @NotBlank
@@ -23,5 +25,4 @@ public class User {
     @PastOrPresent
     private LocalDate birthday;
     private Set<Integer> friends; // для принятых запросов
-    private Set<Integer> friendRequests;  //для непринятых запросов
 }

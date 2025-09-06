@@ -14,5 +14,4 @@ public class UserDto {
     private String name;
     private LocalDate birthday;
     private Set<Integer> friends;
-    private Set<Integer> friendRequests;
 }
