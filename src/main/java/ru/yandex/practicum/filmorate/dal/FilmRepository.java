@@ -34,7 +34,6 @@ public class FilmRepository extends BaseRepository<Film> {
     private static final String FIND_FILM_GENRES = "SELECT * FROM film_genre WHERE film_id = ? Order BY genre_id ASC";
     private static final String FIND_FILM_MPA = "SELECT * FROM rating " +
             " INNER JOIN film ON rating.id = film.mpa WHERE film.id = ?";
-
     private static final String FIND_FILM_LIKES = "SELECT * FROM film_like WHERE film_id = ?";
 
     @Autowired
