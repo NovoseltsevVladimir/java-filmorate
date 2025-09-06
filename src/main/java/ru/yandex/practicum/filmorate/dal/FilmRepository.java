@@ -25,7 +25,6 @@ public class FilmRepository extends BaseRepository<Film> {
     private static final String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, releaseDate = ?, " +
             "duration = ?,mpa = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM film WHERE id = ?";
-
     private static final String INSERT_LIKES = "INSERT INTO film_like(film_id, user_id) " +
             "VALUES (?, ?)";
 
