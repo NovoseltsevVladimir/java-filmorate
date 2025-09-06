@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
@@ -70,6 +71,12 @@ public class UserController {
                                        @PathVariable("otherId") int otherId) {
 
         return userService.getCommonFriends(userId, otherId);
+    }
+
+    @GetMapping("/{id}")
+    public UserDto getUserById(@PathVariable("id") int userId) {
+
+        return userService.getById(userId);
     }
 
 }

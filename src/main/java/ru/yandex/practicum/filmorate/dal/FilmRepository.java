@@ -18,8 +18,8 @@ public class FilmRepository extends BaseRepository<Film> {
 
     private static final String FIND_BY_ID_QUERY  = "SELECT * FROM film WHERE id = ?";
     private static final String FIND_ALL  = "SELECT * FROM film";
-    private static final String INSERT_QUERY = "INSERT INTO film(name, description, releaseDate,duration) " +
-            "VALUES (?, ?, ?, ?)";
+    private static final String INSERT_QUERY = "INSERT INTO film(name, description, releaseDate,duration,mpa) " +
+            "VALUES (?, ?, ?, ?,?)";
     private static final String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, releaseDate = ?, "+
           "duration = ?,mpa = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM film WHERE id = ?";
@@ -53,7 +53,8 @@ public class FilmRepository extends BaseRepository<Film> {
                 film.getName(),
                 film.getDescription(),
                 Timestamp.valueOf(film.getReleaseDate().atStartOfDay()),
-                film.getDuration()
+                film.getDuration(),
+                (film.getMpa()==null) ? null:film.getMpa().getId()
         );
 
         for (int userId:film.getUsersIdWithLikes()) {
@@ -87,7 +88,7 @@ public class FilmRepository extends BaseRepository<Film> {
                 film.getDescription(),
                 Timestamp.valueOf(film.getReleaseDate().atStartOfDay()),
                 film.getDuration(),
-                film.getMpa(),
+                (film.getMpa()==null) ? null:film.getMpa().getId(),
                 filmId
         );
 

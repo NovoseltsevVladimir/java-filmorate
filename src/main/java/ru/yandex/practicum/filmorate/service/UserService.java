@@ -5,10 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -85,6 +87,12 @@ public class UserService {
                 .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
 
+    }
+
+    public UserDto getById (int id) {
+        User user = userStorage.getUserById(id);
+        checkAndInitializeLists(user);
+        return UserMapper.mapToUserDto(userStorage.getUserById(id));
     }
 
     //DELETE /users/{id}/friends/{friendId} — удаление из друзей.

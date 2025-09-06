@@ -13,11 +13,10 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserDbStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -32,6 +31,11 @@ public class FilmService {
     @Autowired
     @Qualifier("UserDbStorage")
     private final UserStorage userStorage = null;
+    @Autowired
+    private final GenreDbStorage genreStorage = null;
+    @Autowired
+    private final RatingDbStorage mpaStorage = null;
+
     private final Logger filmLog = LoggerFactory.getLogger(this.getClass());
 
     public Collection<FilmDto> findAll() {
@@ -42,10 +46,19 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public FilmDto getById (int id) {
+        Film film = filmStorage.getFilmById(id);
+        checkAndInitializeLists(film);
+
+        return FilmMapper.mapToFilmDto(filmStorage.getFilmById(id));
+    }
+
     public FilmDto create(NewFilmRequest request) {
         Film film = FilmMapper.mapToFilm(request);
 
         validateReleaseDate(film);
+        validateAndFillMpa(film);
+        validateAndFillGenres(film);
         checkAndInitializeLists (film);
         film = filmStorage.create(film);
 
@@ -59,6 +72,8 @@ public class FilmService {
 
         //Если проверка не пройдена - фильм не обновляем
         validateReleaseDate(newFilm);
+        validateAndFillMpa(newFilm);
+        validateAndFillGenres(film);
         checkAndInitializeLists (newFilm);
         newFilm = filmStorage.update(newFilm);
 
@@ -72,6 +87,27 @@ public class FilmService {
 
             filmLog.warn(errorMessage);
             throw new ValidationException(errorMessage);
+        }
+    }
+
+    private void validateAndFillMpa(Film film) {
+
+        Rating mpa = film.getMpa();
+        if (mpa != null) {
+            mpa = mpaStorage.getById(mpa.getId());
+            film.setMpa(mpa);
+        }
+    }
+
+    private void validateAndFillGenres(Film film) {
+
+        Set <Genre> genres = film.getGenres();
+        if (genres != null) {
+            Set <Genre> newGenres = new HashSet<>();
+            for (Genre genre:genres) {
+                Genre genreForAdd = genreStorage.getById(genre.getId());
+                newGenres.add(genreForAdd);
+            }
         }
     }
 
@@ -97,12 +133,7 @@ public class FilmService {
         checkAndInitializeLists (film);
 
         Set<Integer> allLikesId = film.getUsersIdWithLikes();
-        if (!allLikesId.contains(userId)) {
-            String errorMessage = "Пользователь с id " + userId + "не ставил лайк фильму с id" + filmId;
-
-            filmLog.warn(errorMessage);
-            throw new NotFoundException(errorMessage);
-        } else {
+        if (allLikesId.contains(userId)) {
             allLikesId.remove(userId);
             film.setUsersIdWithLikes(allLikesId);
         }
@@ -147,6 +178,6 @@ public class FilmService {
         if (film.getGenres()==null) {
             film.setGenres(new HashSet<>());
         }
-
     }
+
 }
