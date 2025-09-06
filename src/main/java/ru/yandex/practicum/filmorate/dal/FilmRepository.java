@@ -27,7 +27,6 @@ public class FilmRepository extends BaseRepository<Film> {
     private static final String DELETE_QUERY = "DELETE FROM film WHERE id = ?";
     private static final String INSERT_LIKES = "INSERT INTO film_like(film_id, user_id) " +
             "VALUES (?, ?)";
-
     private static final String DELETE_LIKES = "DELETE FROM film_like WHERE film_id = ?";
 
     private static final String INSERT_GENRES = "INSERT INTO film_genre(film_id, genre_id) " +
