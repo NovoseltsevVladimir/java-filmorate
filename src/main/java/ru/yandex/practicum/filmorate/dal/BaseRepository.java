@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dal;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,23 +12,17 @@ import ru.yandex.practicum.filmorate.exception.NotSaveException;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class BaseRepository<T> {
 
     protected final JdbcTemplate jdbc;
     protected final RowMapper<T> mapper;
-    private final Class<T> entityType;
-    protected Logger repositoryLog;
-
-    @Autowired
-    public BaseRepository(JdbcTemplate jdbc, RowMapper<T> mapper, Class<T> entityType) {
-        this.jdbc = jdbc;
-        this.mapper = mapper;
-        this.entityType = entityType;
-        this.repositoryLog = LoggerFactory.getLogger(this.getClass());
-    }
+    protected final Class<T> entityType;
+    protected Logger repositoryLog = LoggerFactory.getLogger(this.getClass());
 
     protected Optional<T> findOne(String query, Object... params) {
         try {
@@ -40,7 +35,7 @@ public class BaseRepository<T> {
     }
 
     protected List<T> findMany(String query, Object... params) {
-        return jdbc.queryForList(query, entityType, params);
+       return jdbc.query(query, mapper, params);
     }
 
     public boolean delete(String query, int id) {

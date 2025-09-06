@@ -39,12 +39,12 @@ CREATE TABLE IF NOT EXISTS filmorate_user (
 );
 
 CREATE TABLE IF NOT EXISTS film_like (
-  film_id INTEGER REFERENCES film(id),
+  film_id INTEGER REFERENCES film(id) PRIMARY KEY,
   user_id INTEGER REFERENCES filmorate_user(id)
 );
 
 CREATE TABLE IF NOT EXISTS friendship (
-  user_id INTEGER REFERENCES filmorate_user(id),
+  user_id INTEGER REFERENCES filmorate_user(id) PRIMARY KEY,
   friend_id INTEGER REFERENCES filmorate_user(id),
   approved BOOLEAN
 );

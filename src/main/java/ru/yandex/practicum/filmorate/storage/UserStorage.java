@@ -15,4 +15,6 @@ public interface UserStorage {
     public void remove(User user);
 
     public User getUserById(Integer id);
+
+    public User updateFriends(User user);
 }

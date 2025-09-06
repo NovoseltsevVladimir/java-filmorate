@@ -89,4 +89,9 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
+    @Override
+    public User updateFriends(User user) {
+        return null;
+    }
+
 }

@@ -3,14 +3,16 @@ package ru.yandex.practicum.filmorate.dal;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mappers.UserRowMapper;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class UserRepository extends BaseRepository<User> {
@@ -23,8 +25,15 @@ public class UserRepository extends BaseRepository<User> {
             "birthday = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM filmorate_user WHERE id = ?";
 
-    @Autowired
-    public UserRepository(JdbcTemplate jdbc, UserRowMapper mapper) {
+    private static final String ADD_FRIENDS_QUERY = "INSERT INTO friendship (user_id,friend_id,approved)"+
+            "VALUES (?, ?, ?)";
+
+    private static final String DELETE_FRIENDS_QUERY = "DELETE FROM friendship WHERE user_id = ?";
+
+    private static final String FIND_FRIENDS_BY_ID_QUERY  = "SELECT friend_id FROM friendship WHERE approved"+
+            " AND user_id = ?";
+
+    public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper, User.class);
         this.repositoryLog = LoggerFactory.getLogger(this.getClass());
     }
@@ -33,6 +42,7 @@ public class UserRepository extends BaseRepository<User> {
         return findOne(FIND_BY_ID_QUERY, id);
     }
 
+    //public List<User> findAll() {
     public List<User> findAll() {
         return findMany(FIND_ALL);
     }
@@ -46,12 +56,22 @@ public class UserRepository extends BaseRepository<User> {
                 Timestamp.valueOf(user.getBirthday().atStartOfDay())
         );
 
+        for (Integer friendId:user.getFriends()) {
+            insert(
+                    ADD_FRIENDS_QUERY,
+                    userId,
+                    friendId,
+                    true
+            );
+        }
+
         user.setId(userId);
 
         return user;
     }
 
     public User update(User user) {
+        int userId = user.getId();
         update(
                 UPDATE_QUERY,
                 user.getName(),
@@ -61,11 +81,46 @@ public class UserRepository extends BaseRepository<User> {
                 user.getId()
         );
 
+        if (user.getFriends()!=null) {
+            delete(DELETE_FRIENDS_QUERY, userId);
+
+            for (Integer friendId : user.getFriends()) {
+                insert(
+                        ADD_FRIENDS_QUERY,
+                        userId,
+                        friendId,
+                        true
+                );
+            }
+        }
+
         return user;
     }
 
-    public boolean delete(int id) {
+    public User updateFriends (User user) {
 
+        int userId = user.getId();
+
+        delete(DELETE_FRIENDS_QUERY,userId);
+
+        for (Integer friendId:user.getFriends()) {
+            insert(
+                    ADD_FRIENDS_QUERY,
+                    userId,
+                    friendId,
+                    true
+            );
+        }
+
+        return user;
+
+    }
+
+    public boolean delete(int id) {
         return delete(DELETE_QUERY, id);
     }
+
+
+
+
 }

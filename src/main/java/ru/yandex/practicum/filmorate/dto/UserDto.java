@@ -1,0 +1,19 @@
+package ru.yandex.practicum.filmorate.dto;
+
+import lombok.Data;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
+@Data
+public class UserDto {
+
+    private int id;
+    private String email;
+    private String login;
+    private String name;
+    private LocalDate birthday;
+    private Set<Integer> friends = new HashSet<>();
+    private Set<Integer> friendRequests = new HashSet<>();
+}

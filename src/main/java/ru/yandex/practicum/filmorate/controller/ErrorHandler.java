@@ -33,12 +33,6 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleSQLException(final SQLException e) {
-        return new ErrorResponse("Ошибка SQL " + e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowableException(final Throwable e) {
         return new ErrorResponse(e.getMessage());
     }

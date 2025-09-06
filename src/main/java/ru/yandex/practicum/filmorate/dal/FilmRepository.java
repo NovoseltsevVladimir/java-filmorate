@@ -3,9 +3,11 @@ package ru.yandex.practicum.filmorate.dal;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -32,8 +34,7 @@ public class FilmRepository extends BaseRepository<Film> {
 
     private static final String DELETE_GENRES = "DELETE FROM film_genre WHERE film_id = ?";
 
-    @Autowired
-    public FilmRepository(JdbcTemplate jdbc, FilmRowMapper mapper) {
+    public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper, Film.class);
         this.repositoryLog = LoggerFactory.getLogger(this.getClass());
     }

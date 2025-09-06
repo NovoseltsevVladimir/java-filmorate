@@ -28,7 +28,6 @@ public class Film {
     private Integer duration;
     private Set<Integer> genresId;
     private Set<Integer> usersIdWithLikes;
-    @NotNull
     private int ratingId;
 
 }
