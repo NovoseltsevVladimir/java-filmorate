@@ -27,7 +27,7 @@ public class GenreDbStorage {
         if (optionalGenre.isEmpty()) {
             String errorMessage = "Жанр с id " + id + " не найден";
             log.warn(errorMessage);
-            throw new NotFoundException(errorMessage);
+            throw new NotFoundException (errorMessage);
         } else {
             return optionalGenre.get();
         }

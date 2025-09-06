@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.mapper;
 import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 
 @NoArgsConstructor
@@ -29,7 +30,12 @@ public class FilmMapper {
             dto.setDescription(film.getDescription());
             dto.setDuration(film.getDuration());
             dto.setReleaseDate(film.getReleaseDate());
-            dto.setMpa(film.getMpa());
+            if (film.getMpa() == null) {
+                dto.setMpa(new Rating());
+            } else {
+                dto.setMpa(film.getMpa());
+            }
+
             dto.setGenres(film.getGenres());
             dto.setUsersIdWithLikes(film.getUsersIdWithLikes());
 

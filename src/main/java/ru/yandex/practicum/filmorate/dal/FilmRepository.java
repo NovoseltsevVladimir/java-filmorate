@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,7 +37,12 @@ public class FilmRepository extends BaseRepository<Film> {
 
     private static final String DELETE_GENRES = "DELETE FROM film_genre WHERE film_id = ?";
 
-    private static final String FIND_FILM_GENRES = "SELECT * FROM film_genre WHERE film_id = ?";
+    private static final String FIND_FILM_GENRES = "SELECT * FROM film_genre WHERE film_id = ? Order BY genre_id ASC";
+
+    private static final String FIND_FILM_MPA = "SELECT * FROM rating " +
+            " INNER JOIN film ON rating.id = film.mpa WHERE film.id = ?";
+
+    private static final String FIND_FILM_LIKES = "SELECT * FROM film_like WHERE film_id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper, Film.class);
@@ -124,6 +130,7 @@ public class FilmRepository extends BaseRepository<Film> {
     }
 
     public List <Integer> getFilmGenreId (Film film) {
+
         int filmId = film.getId();
 
         RowMapper <Integer> mapper = new RowMapper<Integer>() {
@@ -134,6 +141,48 @@ public class FilmRepository extends BaseRepository<Film> {
         };
 
         return jdbc.query(FIND_FILM_GENRES, mapper, filmId);
+
+    }
+
+    public Rating getFilmMpa (Film film) {
+
+        Integer filmId = film.getId();
+        if (filmId == null) {
+            return null;
+        }
+
+        RowMapper <Rating> mapper = new RowMapper<Rating>() {
+            @Override
+            public Rating mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Rating rating = new Rating();
+                rating.setId(rs.getInt("id"));
+                rating.setName(rs.getString("name"));
+
+                return rating;
+            }
+        };
+
+        Rating rating = jdbc.queryForObject(FIND_FILM_MPA, mapper, filmId);
+
+        return rating;
+
+    }
+
+    public List<Integer> getFilmLikes (Film film) {
+
+        Integer filmId = film.getId();
+        if (filmId == null) {
+            return null;
+        }
+
+        RowMapper <Integer> mapper = new RowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getInt("user_id");
+            }
+        };
+
+        return jdbc.query(FIND_FILM_LIKES, mapper, filmId);
 
     }
 }

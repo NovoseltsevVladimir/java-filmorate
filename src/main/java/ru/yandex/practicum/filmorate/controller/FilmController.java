@@ -43,18 +43,18 @@ public class FilmController {
 
     //    PUT /films/{id}/like/{userId} — пользователь ставит лайк фильму.
     @PutMapping("/{id}/like/{userId}")
-    public void putNewLike(@PathVariable("id") int filmId,
+    public FilmDto putNewLike(@PathVariable("id") int filmId,
                            @PathVariable("userId") int userId) {
 
-        filmService.addLike(filmId, userId);
+        return filmService.addLike(filmId, userId);
     }
 
     //    DELETE /films/{id}/like/{userId} — пользователь удаляет лайк.
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable("id") int filmId,
+    public FilmDto deleteLike(@PathVariable("id") int filmId,
                            @PathVariable("userId") int userId) {
 
-        filmService.deleteLike(filmId, userId);
+        return filmService.deleteLike(filmId, userId);
     }
 
     //    GET /films/popular?count={count} — возвращает список из первых count фильмов по количеству лайков.

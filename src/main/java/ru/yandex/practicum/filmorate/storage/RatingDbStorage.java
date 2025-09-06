@@ -27,7 +27,7 @@ public class RatingDbStorage {
         if (optionalRating.isEmpty()) {
             String errorMessage = "Рейтинг с id " + id + " не найден";
             log.warn(errorMessage);
-            throw new NotFoundException(errorMessage);
+            throw new NotFoundException (errorMessage);
         } else {
             return optionalRating.get();
         }

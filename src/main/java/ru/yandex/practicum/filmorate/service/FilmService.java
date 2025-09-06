@@ -42,26 +42,23 @@ public class FilmService {
 
         return filmStorage.findAll()
                 .stream()
-                .map(film -> initializeGenres(film))
+                .map(film -> fill(film))
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
-    public FilmDto getById (int id) {
+    public FilmDto getById(int id) {
         Film film = filmStorage.getFilmById(id);
         checkAndInitializeLists(film);
-        initializeGenres(film);
+        film = fill(film);
 
         return FilmMapper.mapToFilmDto(film);
     }
 
     public FilmDto create(NewFilmRequest request) {
         Film film = FilmMapper.mapToFilm(request);
+        film = validate(film);
 
-        validateReleaseDate(film);
-        validateAndFillMpa(film);
-        validateAndFillGenres(film);
-        checkAndInitializeLists (film);
         film = filmStorage.create(film);
 
         return FilmMapper.mapToFilmDto(film);
@@ -70,15 +67,11 @@ public class FilmService {
     public FilmDto update(UpdateFilmRequest request) {
 
         Film film = filmStorage.getFilmById(request.getId());
-        Film newFilm  = FilmMapper.updateFilmFields(film,request);
+        Film newFilm = FilmMapper.updateFilmFields(film, request);
 
         //Если проверка не пройдена - фильм не обновляем
-        validateReleaseDate(newFilm);
-        validateAndFillMpa(newFilm);
-        validateAndFillGenres(film);
-        checkAndInitializeLists (newFilm);
+        validate(film);
         newFilm = filmStorage.update(newFilm);
-        newFilm = initializeGenres(newFilm);
 
         return FilmMapper.mapToFilmDto(newFilm);
     }
@@ -93,53 +86,40 @@ public class FilmService {
         }
     }
 
-    private void validateAndFillMpa(Film film) {
-
-        Rating mpa = film.getMpa();
-        if (mpa != null) {
-            mpa = mpaStorage.getById(mpa.getId());
-            film.setMpa(mpa);
-        }
-    }
-
-    private void validateAndFillGenres(Film film) {
-
-        Set <Genre> genres = film.getGenres();
-        if (genres != null) {
-            Set <Genre> newGenres = new HashSet<>();
-            for (Genre genre:genres) {
-                Genre genreForAdd = genreStorage.getById(genre.getId());
-                newGenres.add(genreForAdd);
-            }
-        }
-    }
-
     //    PUT /films/{id}/like/{userId} — пользователь ставит лайк фильму.
-    public void addLike(int filmId, int userId) {
+    public FilmDto addLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
         //Проверить есть ли в хранилище пользователь, отдельная переменная не нужна
         userStorage.getUserById(userId);
-        checkAndInitializeLists (film);
+        checkAndInitializeLists(film);
+        film = fill(film);
         Set<Integer> allLikesId = film.getUsersIdWithLikes();
 
         if (!allLikesId.contains(userId)) {
             allLikesId.add(userId);
             film.setUsersIdWithLikes(allLikesId);
         }
+
+        filmStorage.update(film);
+
+        return FilmMapper.mapToFilmDto(film);
     }
 
     //    DELETE /films/{id}/like/{userId} — пользователь удаляет лайк.
-    public void deleteLike(int filmId, int userId) {
+    public FilmDto deleteLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
         //Проверить есть ли в хранилище пользователь, отдельная переменная не нужна
         userStorage.getUserById(userId);
-        checkAndInitializeLists (film);
-
+        checkAndInitializeLists(film);
+        film = fill(film);
         Set<Integer> allLikesId = film.getUsersIdWithLikes();
         if (allLikesId.contains(userId)) {
             allLikesId.remove(userId);
             film.setUsersIdWithLikes(allLikesId);
         }
+
+        filmStorage.update(film);
+        return FilmMapper.mapToFilmDto(film);
     }
 
     //    GET /films/popular?count={count} — возвращает список из первых count фильмов по количеству лайков.
@@ -165,34 +145,76 @@ public class FilmService {
 
         List<FilmDto> popularFilms = filmsList
                 .stream()
+                .map(film -> fill(film))
                 .sorted(filmComparator)
-                .limit(count)
-                .map(film -> initializeGenres(film))
                 .map(FilmMapper::mapToFilmDto)
+                .limit(count)
                 .collect(Collectors.toList());
 
         return popularFilms;
     }
 
-    private void checkAndInitializeLists (Film film) {
-        if (film.getUsersIdWithLikes()==null) {
+    private void checkAndInitializeLists(Film film) {
+        if (film.getUsersIdWithLikes() == null) {
             film.setUsersIdWithLikes(new HashSet<>());
         }
 
-        if (film.getGenres()==null) {
+        if (film.getGenres() == null) {
             film.setGenres(new HashSet<>());
         }
     }
 
-    private Film initializeGenres (Film film) {
-       List <Genre> genres = filmStorage.getFilmGenreId(film)
+    private Film validate(Film film) {
+
+        checkAndInitializeLists(film);
+        validateReleaseDate(film);
+        validateGenres(film);
+        validateMpa(film);
+
+        return film;
+    }
+
+    private Film fill(Film film) {
+        film = fillGenres(film);
+        film = fillMpa(film);
+        film = fillLikes(film);
+
+        return film;
+    }
+
+    private void validateGenres(Film film) {
+        for (Genre genre : film.getGenres()) {
+            genreStorage.getById(genre.getId()); //если не найдено - будет ошибка
+        }
+    }
+
+    private void validateMpa(Film film) {
+        Rating Mpa = film.getMpa();
+        if (Mpa != null) {
+            mpaStorage.getById(Mpa.getId()); //если не найдено - будет ошибка
+        }
+    }
+
+    private Film fillGenres(Film film) {
+        List<Genre> genreList = filmStorage.getFilmGenreId(film)
                 .stream()
-                .map(genreId -> genreStorage.getById(genreId))
+                .map(id -> genreStorage.getById(id))
                 .collect(Collectors.toList());
+        film.setGenres(new HashSet<>(genreList));
 
-       film.setGenres(new HashSet<>(genres));
+        return film;
+    }
 
-       return film;
+    private Film fillMpa(Film film) {
+
+        Rating mpa = filmStorage.getFilmMpa(film);
+        film.setMpa(mpa);
+        return film;
+    }
+
+    private Film fillLikes(Film film) {
+        film.setUsersIdWithLikes(new HashSet<>(filmStorage.getFilmLikes(film)));
+        return film;
     }
 
 }

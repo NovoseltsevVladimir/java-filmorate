@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dal.FilmRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -84,6 +85,16 @@ public class FilmDbStorage implements FilmStorage{
     @Override
     public List<Integer> getFilmGenreId(Film film) {
         return repository.getFilmGenreId(film);
+    }
+
+    @Override
+    public Rating getFilmMpa (Film film) {
+        return repository.getFilmMpa(film);
+    }
+
+    @Override
+    public List<Integer> getFilmLikes (Film film) {
+        return repository.getFilmLikes(film);
     }
 
 }
