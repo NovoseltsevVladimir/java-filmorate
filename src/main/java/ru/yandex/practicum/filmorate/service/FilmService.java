@@ -87,11 +87,12 @@ public class FilmService {
         userStorage.getUserById(userId);
         Set<Integer> allLikesId = film.getUsersIdWithLikes();
 
+        //Если уже есть лайк, то фильм не обновляем
         if (!allLikesId.contains(userId)) {
             allLikesId.add(userId);
             film.setUsersIdWithLikes(allLikesId);
             filmStorage.update(film);
-        }//Если уже есть лайк, то фильм не обновляем
+        }
 
         return FilmMapper.mapToFilmDto(film);
     }
@@ -102,11 +103,12 @@ public class FilmService {
         //Проверить есть ли в хранилище пользователь, отдельная переменная не нужна
         userStorage.getUserById(userId);
         Set<Integer> allLikesId = film.getUsersIdWithLikes();
+        //Если лайка нет, то фильм не обновляем
         if (allLikesId.contains(userId)) {
             allLikesId.remove(userId);
             film.setUsersIdWithLikes(allLikesId);
             filmStorage.update(film);
-        }//Если лайка нет, то фильм не обновляем
+        }
 
         return FilmMapper.mapToFilmDto(film);
     }
@@ -177,5 +179,4 @@ public class FilmService {
         }
         film.setMpa(mpa);
     }
-
 }
