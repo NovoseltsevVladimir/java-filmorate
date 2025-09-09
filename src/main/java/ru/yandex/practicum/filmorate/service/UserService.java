@@ -34,7 +34,6 @@ public class UserService {
     //добавление пользователя;
     public UserDto create(NewUserRequest request) {
         User user = UserMapper.mapToUser(request);
-
         validateLogin(user);
         replaceBlankNameToLogin(user);
         user = userStorage.create(user);
