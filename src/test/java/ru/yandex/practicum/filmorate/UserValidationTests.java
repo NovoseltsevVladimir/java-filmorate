@@ -7,10 +7,10 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -24,7 +24,7 @@ public class UserValidationTests {
     private UserService userService;
 
     public UserValidationTests() {
-        this.userService = new UserService(new InMemoryUserStorage());
+        this.userService = new UserService();
     }
 
     @BeforeAll
@@ -77,8 +77,13 @@ public class UserValidationTests {
 
         user.setLogin("Lo g in");
 
+        NewUserRequest newUser = new NewUserRequest();
+        newUser.setName(user.getName());
+        newUser.setBirthday(user.getBirthday());
+        newUser.setLogin(user.getLogin());
+        newUser.setEmail(user.getEmail());
         try {
-            userService.create(user);
+            userService.create(newUser);
             assertFalse(true, "Поле Login, валидация NoSpaces не пройдена");
         } catch (ValidationException ignored) {
             //Если ошибка возникла, то все ок
