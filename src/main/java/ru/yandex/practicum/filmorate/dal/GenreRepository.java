@@ -60,9 +60,9 @@ public class GenreRepository extends BaseRepository<Genre> {
         return delete(DELETE_QUERY, id);
     }
 
-    public List <Genre> findManyById (List<Integer> genreIds) {
+    public List<Genre> findManyById(List<Integer> genreIds) {
         String inSql = String.join(",", Collections.nCopies(genreIds.size(), "?"));
-        return findMany(String.format(FIND_MANY_BY_ID,inSql),genreIds.toArray());
+        return findMany(String.format(FIND_MANY_BY_ID, inSql), genreIds.toArray());
     }
 
 }
