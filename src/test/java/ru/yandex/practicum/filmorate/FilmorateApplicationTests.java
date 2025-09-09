@@ -94,8 +94,8 @@ class FilmorateApplicationTests {
         film = filmStorage.getFilmById(film.getId());
 
         List<Genre> genres = film.getGenres()
-                .stream().
-                collect(Collectors.toList());
+                .stream()
+                .collect(Collectors.toList());
         Assertions.assertEquals(genres.size(), 1, "Жанры не сохраняются");
         Assertions.assertEquals(genres.get(0).getId(), 1, "Жанры не сохраняются");
     }
