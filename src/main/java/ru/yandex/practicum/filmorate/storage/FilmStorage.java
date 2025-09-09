@@ -17,10 +17,4 @@ public interface FilmStorage {
     public void remove(Film film);
 
     public Film getFilmById(Integer id);
-
-    public List<Integer> getFilmGenreId(Film film);
-
-    public Rating getFilmMpa(Film film);
-
-    public List<Integer> getFilmLikes(Film film);
 }

@@ -1,12 +1,11 @@
 package ru.yandex.practicum.filmorate;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
+import jakarta.validation.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -81,12 +80,19 @@ public class FilmValidationTests {
 
         film.setReleaseDate(LocalDate.of(1500, 1, 1));
 
-//        try {
-//            filmService.create(film);
-//            assertFalse(true, "Поле ReleaseDate, валидация 1895.12.28 не пройдена");
-//        } catch (ValidationException ignored) {
-//            //Если ошибка возникла, то все ок
-//        }
+        NewFilmRequest newFilm = new NewFilmRequest();
+        newFilm.setName(film.getName());
+        newFilm.setDuration(film.getDuration());
+        newFilm.setReleaseDate(film.getReleaseDate());
+        newFilm.setDescription(film.getDescription());
+        newFilm.setMpa(film.getMpa());
+
+        try {
+            filmService.create(newFilm);
+            assertFalse(true, "Поле ReleaseDate, валидация 1895.12.28 не пройдена");
+        } catch (ValidationException ignored) {
+            //Если ошибка возникла, то все ок
+        }
     }
 
     @Test

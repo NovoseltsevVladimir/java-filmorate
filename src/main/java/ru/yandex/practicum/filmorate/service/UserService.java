@@ -37,7 +37,6 @@ public class UserService {
 
         validateLogin(user);
         replaceBlankNameToLogin(user);
-        checkAndInitializeLists(user); //инициализация списков, если не установлены
         user = userStorage.create(user);
 
         return UserMapper.mapToUserDto(user);
@@ -52,7 +51,6 @@ public class UserService {
         validateLogin(newUser);
         replaceBlankNameToLogin(newUser);
 
-        checkAndInitializeLists(newUser); //инициализация списков, если не установлены
         newUser = userStorage.update(newUser);
         return UserMapper.mapToUserDto(newUser);
     }
@@ -68,8 +66,7 @@ public class UserService {
     public List<UserDto> addFriend(int userId, int friendId) {
 
         User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId); // для проверки существования
-        checkAndInitializeLists(user); //инициализация списков, если не установлены
+        userStorage.getUserById(friendId); // для проверки существования
 
         Set<Integer> allFriendsId = user.getFriends();
 
@@ -89,16 +86,13 @@ public class UserService {
 
     public UserDto getById(int id) {
         User user = userStorage.getUserById(id);
-        checkAndInitializeLists(user);
         return UserMapper.mapToUserDto(userStorage.getUserById(id));
     }
 
     //DELETE /users/{id}/friends/{friendId} — удаление из друзей.
     public List<UserDto> deleteFriend(int userId, int friendId) {
         User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId); // для проверки существования
-
-        checkAndInitializeLists(user); //инициализация списков, если не установлены
+        userStorage.getUserById(friendId); // для проверки существования
 
         Set<Integer> allFriendsId = user.getFriends();
         if (allFriendsId.contains(friendId)) {
@@ -114,7 +108,6 @@ public class UserService {
     //GET /users/{id}/friends — возвращаем список пользователей, являющихся его друзьями.
     public List<UserDto> getFriends(int userId) {
         User user = userStorage.getUserById(userId);
-        checkAndInitializeLists(user); //инициализация списков, если не установлены
 
         return userStorage.getFriends(user)
                 .stream()
@@ -144,12 +137,6 @@ public class UserService {
 
             usersLog.warn(errorMessage);
             throw new ValidationException(errorMessage);
-        }
-    }
-
-    private void checkAndInitializeLists(User user) {
-        if (user.getFriends() == null) {
-            user.setFriends(new HashSet<>());
         }
     }
 }

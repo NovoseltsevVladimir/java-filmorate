@@ -52,7 +52,13 @@ public class BaseRepository<T> {
             return ps;
         }, keyHolder);
 
-        Integer id = keyHolder.getKeyAs(Integer.class);
+        Integer id;
+        if (keyHolder.getKeyList().getFirst().size() == 1) {
+            id = keyHolder.getKeyAs(Integer.class);
+        } else {
+            id = 0; // проверка на составном ключе не нужна
+        }
+
         if (id != null) {
             return id;
         } else {

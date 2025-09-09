@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -39,16 +40,12 @@ public class FilmService {
 
         return filmStorage.findAll()
                 .stream()
-                .map(film -> fill(film))
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public FilmDto getById(int id) {
         Film film = filmStorage.getFilmById(id);
-        checkAndInitializeLists(film);
-        film = fill(film);
-
         return FilmMapper.mapToFilmDto(film);
     }
 
@@ -88,16 +85,13 @@ public class FilmService {
         Film film = filmStorage.getFilmById(filmId);
         //Проверить есть ли в хранилище пользователь, отдельная переменная не нужна
         userStorage.getUserById(userId);
-        checkAndInitializeLists(film);
-        film = fill(film);
         Set<Integer> allLikesId = film.getUsersIdWithLikes();
 
         if (!allLikesId.contains(userId)) {
             allLikesId.add(userId);
             film.setUsersIdWithLikes(allLikesId);
-        }
-
-        filmStorage.update(film);
+            filmStorage.update(film);
+        }//Если уже есть лайк, то фильм не обновляем
 
         return FilmMapper.mapToFilmDto(film);
     }
@@ -107,15 +101,13 @@ public class FilmService {
         Film film = filmStorage.getFilmById(filmId);
         //Проверить есть ли в хранилище пользователь, отдельная переменная не нужна
         userStorage.getUserById(userId);
-        checkAndInitializeLists(film);
-        film = fill(film);
         Set<Integer> allLikesId = film.getUsersIdWithLikes();
         if (allLikesId.contains(userId)) {
             allLikesId.remove(userId);
             film.setUsersIdWithLikes(allLikesId);
-        }
+            filmStorage.update(film);
+        }//Если лайка нет, то фильм не обновляем
 
-        filmStorage.update(film);
         return FilmMapper.mapToFilmDto(film);
     }
 
@@ -142,7 +134,6 @@ public class FilmService {
 
         List<FilmDto> popularFilms = filmsList
                 .stream()
-                .map(film -> fill(film))
                 .sorted(filmComparator)
                 .map(FilmMapper::mapToFilmDto)
                 .limit(count)
@@ -151,19 +142,8 @@ public class FilmService {
         return popularFilms;
     }
 
-    private void checkAndInitializeLists(Film film) {
-        if (film.getUsersIdWithLikes() == null) {
-            film.setUsersIdWithLikes(new HashSet<>());
-        }
-
-        if (film.getGenres() == null) {
-            film.setGenres(new HashSet<>());
-        }
-    }
-
     private Film validate(Film film) {
 
-        checkAndInitializeLists(film);
         validateReleaseDate(film);
         validateGenres(film);
         validateMpa(film);
@@ -171,18 +151,23 @@ public class FilmService {
         return film;
     }
 
-    private Film fill(Film film) {
-        film = fillGenres(film);
-        film = fillMpa(film);
-        film = fillLikes(film);
-
-        return film;
-    }
-
     private void validateGenres(Film film) {
-        for (Genre genre : film.getGenres()) {
-            genreStorage.getById(genre.getId()); //если не найдено - будет ошибка
+
+        List<Integer> genreIdList = new ArrayList<>();
+        Collection<Genre> genreFromFilm = film.getGenres();
+
+        for (Genre genre : genreFromFilm) {
+            genreIdList.add(genre.getId());//если не найдено - будет ошибка
         }
+
+        Collection<Genre> genresFromStorage = genreStorage.findManyById(genreIdList);
+
+        if (genresFromStorage.size() != genreFromFilm.size()) {
+            String errorMessage = "Указанные жанры отсутствуют в базе";
+            filmLog.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
+        }
+
     }
 
     private void validateMpa(Film film) {
@@ -190,28 +175,7 @@ public class FilmService {
         if (mpa != null) {
             mpaStorage.getById(mpa.getId()); //если не найдено - будет ошибка
         }
-    }
-
-    private Film fillGenres(Film film) {
-        List<Genre> genreList = filmStorage.getFilmGenreId(film)
-                .stream()
-                .map(id -> genreStorage.getById(id))
-                .collect(Collectors.toList());
-        film.setGenres(new HashSet<>(genreList));
-
-        return film;
-    }
-
-    private Film fillMpa(Film film) {
-
-        Rating mpa = filmStorage.getFilmMpa(film);
         film.setMpa(mpa);
-        return film;
-    }
-
-    private Film fillLikes(Film film) {
-        film.setUsersIdWithLikes(new HashSet<>(filmStorage.getFilmLikes(film)));
-        return film;
     }
 
 }

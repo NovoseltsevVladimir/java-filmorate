@@ -131,6 +131,4 @@ public class UserRepository extends BaseRepository<User> {
         return jdbc.query(FIND_FRIENDS_BY_ID_QUERY, mapper, userId);
 
     }
-
-
 }

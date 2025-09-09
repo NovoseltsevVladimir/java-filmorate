@@ -8,11 +8,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.FilmRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 @Qualifier("FilmDbStorage")
@@ -40,9 +37,9 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film update(Film film) {
         int filmId = film.getId();
-        Optional<Film> oldFilm = repository.findById(filmId);
+        Film oldFilm = repository.findById(filmId);
 
-        if (oldFilm.isEmpty()) {
+        if (oldFilm == null) {
             String errorMessage = "Фильм с id " + filmId + " отсутствует";
             log.warn(errorMessage);
             throw new NotFoundException(errorMessage);
@@ -50,16 +47,15 @@ public class FilmDbStorage implements FilmStorage {
 
         repository.update(film);
 
-        //Лайки
         return film;
     }
 
     @Override
     public void remove(Film film) {
         int filmId = film.getId();
-        Optional<Film> optionalFilm = repository.findById(filmId);
+        Film filmForDelete = repository.findById(filmId);
 
-        if (optionalFilm.isEmpty()) {
+        if (filmForDelete == null) {
             String errorMessage = "Фильм с id " + filmId + " отсутствует";
             log.warn(errorMessage);
             throw new NotFoundException(errorMessage);
@@ -70,29 +66,13 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getFilmById(Integer id) {
-        Optional<Film> optionalFilm = repository.findById(id);
-        if (optionalFilm.isEmpty()) {
+        Film film = repository.findById(id);
+        if (film == null) {
             String errorMessage = "Фильм с id " + id + " отсутствует";
             log.warn(errorMessage);
             throw new NotFoundException(errorMessage);
         } else {
-            return optionalFilm.get();
+            return film;
         }
     }
-
-    @Override
-    public List<Integer> getFilmGenreId(Film film) {
-        return repository.getFilmGenreId(film);
-    }
-
-    @Override
-    public Rating getFilmMpa(Film film) {
-        return repository.getFilmMpa(film);
-    }
-
-    @Override
-    public List<Integer> getFilmLikes(Film film) {
-        return repository.getFilmLikes(film);
-    }
-
 }

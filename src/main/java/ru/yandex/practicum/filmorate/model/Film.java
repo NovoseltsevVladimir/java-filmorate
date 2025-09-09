@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -24,8 +25,7 @@ public class Film {
     @NotNull
     @Positive
     private Integer duration;
-    private Set<Genre> genres;
-    private Set<Integer> usersIdWithLikes;
+    private Set<Genre> genres = new HashSet<>();
+    private Set<Integer> usersIdWithLikes = new HashSet<>();
     private Rating mpa;
-
 }

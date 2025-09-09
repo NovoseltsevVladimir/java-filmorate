@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Genre;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ public class GenreRepository extends BaseRepository<Genre> {
 
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM genre WHERE id = ?";
     private static final String FIND_ALL = "SELECT * FROM genre";
+    private static final String FIND_MANY_BY_ID = "SELECT * FROM genre WHERE id IN (%s)";
     private static final String INSERT_QUERY = "INSERT INTO genre(name) VALUES (?)";
     private static final String UPDATE_QUERY = "UPDATE genre SET name = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM genre WHERE id = ?";
@@ -56,6 +58,11 @@ public class GenreRepository extends BaseRepository<Genre> {
     public boolean delete(int id) {
 
         return delete(DELETE_QUERY, id);
+    }
+
+    public List <Genre> findManyById (List<Integer> genreIds) {
+        String inSql = String.join(",", Collections.nCopies(genreIds.size(), "?"));
+        return findMany(String.format(FIND_MANY_BY_ID,inSql),genreIds.toArray());
     }
 
 }

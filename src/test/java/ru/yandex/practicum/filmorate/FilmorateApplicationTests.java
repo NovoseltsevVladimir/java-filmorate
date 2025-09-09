@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @JdbcTest
 @AutoConfigureTestDatabase
@@ -90,9 +91,13 @@ class FilmorateApplicationTests {
     @Test
     public void testGetFilmGenre() {
         film = filmStorage.create(film);
-        List<Integer> genreIdList = filmStorage.getFilmGenreId(film);
-        Assertions.assertEquals(genreIdList.size(), 1, "Жанры не сохраняются");
-        Assertions.assertEquals(genreIdList.get(0), 1, "Жанры не сохраняются");
+        film = filmStorage.getFilmById(film.getId());
+
+        List<Genre> genres = film.getGenres()
+                .stream().
+                collect(Collectors.toList());
+        Assertions.assertEquals(genres.size(), 1, "Жанры не сохраняются");
+        Assertions.assertEquals(genres.get(0).getId(), 1, "Жанры не сохраняются");
     }
 
     @Test
